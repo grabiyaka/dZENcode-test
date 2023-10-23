@@ -11,5 +11,10 @@ export const user = {
         getUser(state){
             return state.user
         }
+    },
+    actions: {
+        getUser({commit}){
+            commit('setUser', )
+        }
     }
 }

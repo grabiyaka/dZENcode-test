@@ -37,4 +37,27 @@ class PostService
         $post->images()->delete();
         $post->delete();
     }
+
+    public function buildPostsTree()
+    {
+        $posts = Post::where('parent_id', null)->get();
+    
+        foreach ($posts as $post) {
+            $this->buildSubTree($post);
+        }
+    
+        return $posts;
+    }
+    
+    protected function buildSubTree(Post $post)
+    {
+        $subposts = Post::where('parent_id', $post->id)->get();
+    
+        foreach ($subposts as $subpost) {
+            $this->buildSubTree($subpost);
+        }
+    
+        $post->setAttribute('posts', $subposts);
+    }
+    
 }

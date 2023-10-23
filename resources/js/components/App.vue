@@ -43,7 +43,6 @@ $darkblue: #6e85b7;
 }
 
 #app {
-    height: 100vh;
     display: flex;
     flex-direction: column;
 }

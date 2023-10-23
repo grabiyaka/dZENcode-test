@@ -4,7 +4,7 @@ import { token } from './modules/token'
 
 const store = createStore({
     modules: {
-        token: token
+        token
     }
 })
 

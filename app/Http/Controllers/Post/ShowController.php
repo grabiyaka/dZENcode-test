@@ -9,7 +9,7 @@ class ShowController extends BaseController
 {
     public function __invoke(Post $post)
     {   
-        $posts = $this->service->getAllPosts();
+        $posts = $this->service->buildPostsTree();
         return $posts;
     }
 }
