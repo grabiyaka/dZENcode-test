@@ -1,0 +1,449 @@
+<script>
+import {
+    RouterLink,
+    RouterView
+} from "vue-router";
+import HeaderComponent from "./Main/HeaderComponent.vue";
+import LoaderComponent from "./Main/LoaderComponent.vue";
+import FooterComponent from "./Main/FooterComponent.vue";
+
+export default {
+    components: {
+        HeaderComponent,
+        LoaderComponent,
+        FooterComponent
+    },
+    data: () => ({}),
+    mounted() {}
+};
+</script>
+    
+<template>
+<HeaderComponent ref="header" />
+<router-view v-slot="{ Component }">
+    <transition name="slide" mode="out-in">
+        <div id="viewbox" :key="$route.path">
+            <component :is="Component"></component>
+            <LoaderComponent></LoaderComponent>
+        </div>
+    </transition>
+</router-view>
+<FooterComponent />
+</template>
+
+<style lang="scss">
+@import url("/node_modules/bootstrap-icons/font/bootstrap-icons.css");
+
+$lightblue: #b2c8df;
+$darkblue: #6e85b7;
+
+.border-block {
+    border-bottom: 5px solid #8a8a8a;
+    border-radius: 0;
+}
+
+#app {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+h1,
+h2,
+h3,
+h4 {
+    font-size: 36px;
+    font-weight: bold;
+    margin: 0 0 20px;
+    color: #333;
+    // font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+h1 {
+    position: relative;
+    font-size: 50px;
+    font-weight: 600;
+    background-image: linear-gradient(to left, #000, $darkblue);
+    color: transparent;
+    background-clip: text;
+    -webkit-background-clip: text;
+}
+
+.underline {
+    position: relative;
+
+    &::after {
+        content: "";
+        display: block;
+        position: absolute;
+        left: 0;
+        bottom: -5px;
+        width: 100%;
+        height: 2px;
+        background-image: linear-gradient(to right, transparent, $lightblue, transparent);
+        opacity: 0.9;
+    }
+}
+
+h2 {
+    text-align: center;
+    font-size: 28px;
+    margin: 0 0 20px;
+    color: #333;
+}
+
+h3 {
+    text-align: center;
+    font-size: 22px;
+    margin: 0 0 20px;
+    color: #333;
+}
+
+h4 {
+    font-size: 18px;
+    margin: 0 0 10px;
+    color: #555;
+}
+
+router-view {
+    margin-bottom: 50px;
+}
+
+button:disabled,
+button[disabled] {
+    border: 1px solid #999999;
+    background-color: #cccccc;
+    color: #666666;
+}
+
+.slide-enter-active {
+    transition: all 0.3s ease;
+}
+
+.slide-leave-active {
+    transition: all 0.4s ease;
+}
+
+.slide-enter-from,
+.slide-leave-to {
+    opacity: 0;
+    overflow: hidden;
+    transform: scale(0.9);
+}
+
+#content {
+    font-family: "Roboto", sans-serif;
+    flex-direction: column;
+    flex-wrap: wrap;
+}
+
+.flex {
+    display: flex;
+}
+
+.center {
+    text-align: center;
+    justify-content: center;
+}
+
+.btn {
+    text-decoration: none;
+    background: slateblue;
+    border: none;
+    border-radius: 5px;
+    padding: 5px;
+    cursor: pointer;
+    color: white;
+    transition: 0.4s;
+}
+
+.images-box {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.content {
+    display: block;
+}
+
+.block {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.element {
+    background: white;
+    border: 2px solid #000;
+    padding: 5px;
+}
+
+input[type="file"] {
+    font-size: 16px;
+    background: white;
+    border-radius: 13px;
+    width: 350px;
+    outline: none;
+    margin-bottom: 10px;
+    border: 2px solid #000;
+    transition: all ease 0.5s;
+}
+
+::-webkit-file-upload-button {
+    color: black;
+    background: #b2c8df;
+    padding: 20px;
+    border: none;
+    border-radius: 13px;
+    box-shadow: 1px 0 1px 1px #6b4559;
+    outline: none;
+    transition: all ease 0.5s;
+    height: 60px;
+}
+
+::-webkit-file-upload-button:hover {
+    color: white;
+    background: #6e85b7;
+}
+
+.image-box {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 80%;
+    margin: 0;
+}
+
+img {
+    width: calc(90vh * 3 / 4);
+    //height: auto;
+    max-width: 100%;
+    margin: 0;
+}
+
+.container {
+    justify-content: center;
+    display: flex;
+    padding: 0;
+}
+
+form {
+    text-align: center;
+    margin-top: 50px;
+}
+
+.dropzone {
+    padding: 50px;
+    background: #212121;
+    color: white;
+}
+
+nav .btn,
+nav input {
+    width: 100%;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+nav input {
+    outline: none;
+    padding: 10px;
+    border-radius: 0;
+    border: 1px solid gray;
+}
+
+textarea {
+    width: 100%;
+    height: 85px;
+}
+
+.checkboxs {
+    width: fit-content;
+}
+
+.checkboxs input[type="radio"] {
+    margin-left: 3%;
+    margin-right: 3%;
+}
+
+.btn-danger:hover {
+    transition: all ease 0.5s;
+    background: linear-gradient(to left, #c0392b 50%, transparent 50%);
+    background-size: 200% 100%;
+    background-position: top right;
+}
+
+input[type="text"],
+input[type="number"],
+.select {
+    font-size: 18px;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+
+    &.select_80 {
+        width: 80%;
+    }
+}
+
+input[type="submit"] {
+    width: 80%;
+    height: 40px;
+    background-color: #4caf50;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all ease 0.5s;
+}
+
+input[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+div {
+    border-radius: 5px;
+}
+
+.item {
+    padding: 10px;
+    border: solid slategray;
+    margin: 5px;
+    width: 100%;
+}
+
+body {
+    height: 100%;
+    min-height: 100vh;
+    font-size: 17px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.btn {
+    background: linear-gradient(to left, #6e85b7 50%, transparent 50%);
+    background-size: 200% 100%;
+    color: black;
+    border-radius: 6px;
+    cursor: pointer;
+    padding: 10px;
+    transition: 0.5s;
+    border: 1px solid #6e85b7;
+    margin: 5px 10px;
+    box-shadow: 0 2px 10px #00000030;
+    text-decoration: none;
+}
+
+.btn:hover {
+    background-position: top right;
+    color: white;
+}
+
+.navbar {
+    margin: 30px;
+}
+
+.popup {
+    position: absolute;
+    background: white;
+    border-radius: 20px;
+    padding: 4px 9px 4px 12px;
+    font-weight: bold;
+    border: 1px solid black;
+}
+
+.viewport {
+    position: relative;
+    width: fit-content;
+    height: fit-content;
+    margin: 0 auto;
+}
+
+.viewport img {
+    width: 360px;
+    height: auto;
+    margin-right: 10px;
+}
+
+.point {
+    position: absolute;
+    height: 10px;
+    width: 10px;
+    background: black;
+    border-radius: 20px;
+}
+
+.preloader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.preloader span {
+    display: block;
+    height: 15px;
+    width: 15px;
+    background: #000000;
+    margin: 0 7px;
+    border-radius: 10px;
+    animation: 1.2s upDown infinite;
+}
+
+.preloader span:first-child {
+    animation-delay: 0.15s;
+}
+
+.preloader span:nth-child(2) {
+    animation-delay: 0.3s;
+}
+
+.preloader span:nth-child(3) {
+    animation-delay: 0.45s;
+}
+
+.preloader span:nth-child(4) {
+    animation-delay: 0.6s;
+}
+
+.preloader span:last-child {
+    animation-delay: 0.75s;
+}
+
+.line {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    background: red;
+}
+
+.wrap {
+    flex-wrap: wrap;
+    transition: all ease 0.5s;
+}
+
+@keyframes upDown {
+    0% {
+        height: 15px;
+    }
+
+    50% {
+        height: 60px;
+    }
+
+    100% {
+        height: 15px;
+    }
+}
+</style>
