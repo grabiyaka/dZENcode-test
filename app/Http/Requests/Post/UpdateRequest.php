@@ -24,7 +24,9 @@ class UpdateRequest extends FormRequest
     public function rules()
     {
         return [ 
-            'content' => ''
+            'content' => '',
+            'parent_id' => '',
+            'files' => ''
         ];
     }
 }

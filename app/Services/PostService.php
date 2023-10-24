@@ -2,6 +2,7 @@
  namespace App\Services;
  use App\Models\Post;
  use App\Models\User;
+ use App\Models\File;
 
 class PostService
 {
@@ -53,11 +54,15 @@ class PostService
     {
         $subposts = Post::where('parent_id', $post->id)->get();
     
+        $files = File::where('post_id', $post->id)->get();
+        $post->setAttribute('files', $files);
+    
         foreach ($subposts as $subpost) {
             $this->buildSubTree($subpost);
         }
     
         $post->setAttribute('posts', $subposts);
     }
+    
     
 }

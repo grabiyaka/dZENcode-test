@@ -180,32 +180,46 @@ button[disabled] {
 }
 
 input[type="file"] {
+    display: none; /* Скрываем оригинальный input */
+}
+label.file-upload-button {
     font-size: 16px;
-    background: white;
-    border-radius: 13px;
-    width: 350px;
-    outline: none;
-    margin-bottom: 10px;
-    border: 2px solid #000;
-    transition: all ease 0.5s;
-}
-
-::-webkit-file-upload-button {
-    color: black;
     background: #b2c8df;
-    padding: 20px;
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
     border: none;
-    border-radius: 13px;
-    box-shadow: 1px 0 1px 1px #6b4559;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Добавляем красивую тень */
     outline: none;
     transition: all ease 0.5s;
-    height: 60px;
+    position: relative;
 }
 
-::-webkit-file-upload-button:hover {
-    color: white;
-    background: #6e85b7;
+label.file-upload-button::before {
+    content: "+";
+    font-size: 36px; /* Увеличиваем размер плюсика */
+    color: rgba(0, 0, 0, 0.6); /* Делаем плюсик прозрачным */
+    position: absolute;
 }
+
+/* Позиционируем плюсик в середине кнопки */
+label.file-upload-button::before {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+label.file-upload-button:hover {
+    background: #6e85b7;
+    color: white;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5); /* Увеличиваем тень при наведении */
+}
+
+
 
 .image-box {
     align-items: center;
@@ -431,6 +445,28 @@ body {
     flex-wrap: wrap;
     transition: all ease 0.5s;
 }
+
+.cross-delete {
+        position: absolute;
+        top: -15px;
+        right: 5px;
+        font-size: 20px;
+        color: whitesmoke;
+        border: none;
+        cursor: pointer;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: transform 0.5s;
+        background: #d9534f;
+    }
+
+    .cross-delete:hover {
+        transform: rotate(180deg);
+    }
 
 @keyframes upDown {
     0% {

@@ -22,12 +22,18 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::get('/posts', ShowController::class)->name('show');
+
 Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::group(['namespace' => 'App\Http\Controllers\Post', 'prefix' => 'post'], function () {
-        Route::get('/get/{id}', IndexController::class);
-        Route::post('/', StoreController::class);
-        Route::patch('/{post}', UpdateController::class);
-        Route::delete('/{post}', DeleteController::class);
-    }
+            Route::get('/get/{id}', IndexController::class);
+            Route::post('/', StoreController::class);
+            Route::patch('/{post}', UpdateController::class);
+            Route::delete('/{post}', DeleteController::class);
+        }
+    );
+    Route::group(['namespace' => 'App\Http\Controllers\File', 'prefix' => 'file'], function () {
+            Route::post('/', StoreController::class);
+            Route::delete('/{file}', DeleteController::class);
+        }
     );
 });
