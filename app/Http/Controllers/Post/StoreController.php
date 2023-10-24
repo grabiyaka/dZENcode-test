@@ -4,12 +4,11 @@ namespace App\Http\Controllers\Post;
 
 use App\Http\Requests\Post\StoreRequest;
 use App\Http\Resources\Post\PostResource;
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\File;
 use Str;
-use Intervention\Image\ImageManagerStatic as Image;
+
 
 class StoreController extends BaseController
 {
@@ -28,19 +27,8 @@ class StoreController extends BaseController
             foreach ($files as $file) {
                 $extension = $file->getClientOriginalExtension();
                 $uniqueFileName = Str::random(40) . '.' . $extension;
-                if($this->isImage($file)){
-                    try{
-                    $image = Image::make($file);
-                    $image->resize(320, 240);
-                    } catch(Exception $error){
-                        return $error;
-                    }
-                    $path = $image->storeAs('uploads', $uniqueFileName);
-                    $path = $image->store('uploads', 'public');
-                }else{
-                    $path = $file->storeAs('uploads', $uniqueFileName);
-                    $path = $file->store('uploads', 'public');
-                }
+                $path = $file->storeAs('uploads', $uniqueFileName);
+                $path = $file->store('uploads', 'public');
 
 
                 $fileOptions = [

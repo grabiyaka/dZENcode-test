@@ -4,8 +4,6 @@
     <div>
         Pleace write your comment
         <quill-editor ref="quillComponent"></quill-editor>
-        <!-- <textarea v-model="post.content" name="" id="" cols="30" rows="10"></textarea> -->
-        <button @click="postCreate()" class="btn">Submit</button>
     </div>
 
     <CommentTree :replyPostId="replyPostId" :posts="posts"></CommentTree>
@@ -37,49 +35,6 @@ export default {
         CommentTree
     },
     methods: {
-        postCreate(postId = null) {
-            const post = {
-                content: ''
-            };
-            let fd = new FormData();
-
-            if (postId) {
-                post.content = this.$refs.quillReply[0].quill.root.innerHTML;
-                post.parent_id = postId;
-            } else {
-                post.content = this.$refs.quillComponent.quill.root.innerHTML;
-
-                this.$refs.quillComponent.tempFiles.forEach((file, index) => {
-                    fd.append(`files[${index}]`, file);
-                });
-            }
-
-            for (let key in post) {
-                if (post.hasOwnProperty(key)) {
-                    fd.append(key, post[key]);
-                }
-            }
-            if (post.content) {
-                axios.get("/sanctum/csrf-cookie").then((response) => {
-                    axios
-                        .post("/api/post", fd)
-                        .then((res) => {
-                            if (postId) {
-
-                            } else {
-                                console.log(res.data);
-                                // this.post.content = ''
-                                // this.$refs.quillComponent.quill.root.innerHTML = ''
-                                // this.posts.unshift(res.data.data)
-                            }
-
-                        })
-                        .catch((err) => {});
-                });
-            } else {
-                alert('error');
-            }
-        },
         getPosts() {
             try {
                 axios

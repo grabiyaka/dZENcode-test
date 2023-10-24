@@ -30,8 +30,8 @@
                 <button @click="replyPostId = post.id, $parent" class="btn reply-btn" v-if="post.id != replyPostId">Reply</button>
 
                 <div class="replyPost" v-if="post.id == replyPostId">
-                    <quill-editor :ref="'quillReply'"></quill-editor>
-                    <button @click="postCreate(post.id)" class="btn reply-btn">Reply</button>
+                    <quill-editor :post="post" :ref="'quillReply'"></quill-editor>
+                    
                 </div>
             </div>
             <CommentTree v-if="post.posts" :posts="post.posts"></CommentTree>
@@ -56,6 +56,7 @@ export default {
     },
     methods: {
         postCreate(postId = null) {
+            let fd = new FormData()
             const post = {
                 content: ''
             }
@@ -64,23 +65,30 @@ export default {
             if (postId) {
                 post.content = this.$refs.quillReply[0].quill.root.innerHTML;
                 post.parent_id = postId
-                
+
                 this.$refs.quillReply[0].tempFiles.forEach((file, index) => {
                     fd.append(`files[${index}]`, file);
+                    console.log(file);
                 });
             } else post.content = this.$refs.quillComponent.quill.root.innerHTML;
 
+            for (let key in post) {
+                if (post.hasOwnProperty(key)) {
+                    fd.append(key, post[key]);
+                }
+            }
             if (post.content) {
                 axios.get("/sanctum/csrf-cookie").then((response) => {
                     axios
-                        .post("/api/post", post)
+                        .post("/api/post", fd)
                         .then((res) => {
                             if (postId) {
-
+                                console.log(res.data);
                             } else {
-                                this.post.content = ''
-                                this.$refs.quillComponent.quill.root.innerHTML = ''
-                                this.posts.unshift(res.data.data)
+                                console.log(res.data);
+                                // this.post.content = ''
+                                // this.$refs.quillComponent.quill.root.innerHTML = ''
+                                // this.posts.unshift(res.data.data)
                             }
 
                         })
