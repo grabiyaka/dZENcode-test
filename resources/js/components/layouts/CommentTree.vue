@@ -1,8 +1,8 @@
 <template>
 <div>
     <div class="block-posts" v-if="posts.length">
-        <div v-for="post in posts" class="block-post">
-            <button @click="deletePost(post.id)" class="cross-delete">&#10005</button>
+        <div v-for="(post, index) in posts" class="block-post">
+            <button v-if="$store.getters.getUser?.id == post.user_id" @click="deletePost(post.id)" class="cross-delete">&#10005</button>
 
             <div class="user-info">
 
@@ -21,20 +21,22 @@
                         <img v-if="isImage(file) || isGif(file)" :src="'/storage/'+file.path" alt="Image" />
                         <pre v-else-if="isTextFile(file)">{{ file.content }}</pre>
                         <span v-else>{{ file.name }}</span>
-                        <button class="cross-delete" @click="deleteFile(file, post.id)">&#10005</button>
+                        <button v-if="$store.getters.getUser?.id == post.user_id" class="cross-delete" @click="deleteFile(file, post.id)">&#10005</button>
                     </div>
                 </div>
             </div>
 
             <div class="post-control-panel">
-                <button @click="replyPostId = post.id, $parent" class="btn reply-btn" v-if="post.id != replyPostId">Reply</button>
+                <button @click="$store.commit('setReplyId', post.id)" class="btn reply-btn" v-if="post.id !== $store.getters.getReplyId && $store.state.token.token">Reply</button>
 
-                <div class="replyPost" v-if="post.id == replyPostId">
+                <div class="replyPost" v-if="post.id == $store.getters.getReplyId">
                     <quill-editor :post="post" :ref="'quillReply'"></quill-editor>
-
                 </div>
             </div>
-            <CommentTree v-if="post.posts" :posts="post.posts"></CommentTree>
+            <div v-if="post.posts">
+                <CommentTree :posts="post.posts"></CommentTree>
+                <button class="btn gray-btn" v-if="post.more_posts" @click="downloadMoreComments(post.id, index)">Download more comments...</button>
+            </div>
         </div>
     </div>
 </div>
@@ -45,8 +47,7 @@ import QuillEditor from "./QuillEditor.vue";
 
 export default {
     props: {
-        posts: Array,
-        replyPostId: null
+        posts: Object
     },
     data() {
         return {}
@@ -86,9 +87,11 @@ export default {
                                 console.log(res.data);
                             } else {
                                 console.log(res.data);
-                                // this.post.content = ''
-                                // this.$refs.quillComponent.quill.root.innerHTML = ''
-                                // this.posts.unshift(res.data.data)
+                                this.post.content = ''
+                                this.quill.root.innerHTML = ''
+                                const result = this.posts.unshift(res.data.data)
+                                this.$store.commit('setPosts', result)
+                                console.log(this.$store.getters.getPosts);
                             }
 
                         })
@@ -97,6 +100,20 @@ export default {
             } else {
                 alert('error');
             }
+        },
+        downloadMoreComments(id, index) {
+            axios
+                .post(`/api/post/childs/${id}`)
+                .then((res) => {
+                    res.data.forEach(el => {
+                        this.$store.commit('addPostToParent', {
+                            parentId: id,
+                            newPost: el
+                        });
+                    });
+                    this.posts[index].more_posts = false
+                })
+                .catch((err) => {});
         },
         deletePost(id) {
             axios
@@ -198,7 +215,7 @@ export default {
                 const post = posts[i];
                 if (post.id === postId) {
                     posts.splice(i, 1);
-                    return posts; 
+                    return posts;
                 }
 
                 if (post.posts) {
@@ -267,30 +284,34 @@ export default {
 
         .post-control-panel {
             margin-top: 10px;
-
-            .btn {
-                background-color: #007bff;
-                color: #fff;
-                padding: 5px 10px;
-                border: none;
-                cursor: pointer;
-                margin-right: 10px;
-                border-radius: 5px;
-            }
-
-            .delete-btn {
-                background-color: #d9534f;
-            }
-
-            .reply-btn {
-                background-color: #5bc0de;
-            }
         }
     }
 
     .post-time {
         font-style: italic;
         color: #888;
+    }
+
+    .btn {
+        background-color: #007bff;
+        color: #fff;
+        padding: 5px 10px;
+        border: none;
+        cursor: pointer;
+        margin-right: 10px;
+        border-radius: 5px;
+    }
+
+    .delete-btn {
+        background-color: #d9534f;
+    }
+
+    .reply-btn {
+        background-color: #5bc0de;
+    }
+
+    .gray-btn {
+        background-color: #808080;
     }
 
 }

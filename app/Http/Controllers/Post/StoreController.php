@@ -37,7 +37,7 @@ class StoreController extends BaseController
                     'post_id' => $postResource['id']
                 ];
 
-                $fileModel = File::create($fileOptions);
+                $filesResult[] = File::create($fileOptions);
             }
         }
 

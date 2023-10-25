@@ -1,26 +1,24 @@
 <template>
-<div >
+<div>
     <div @click="modal = true" :class="btnClass">
         <i class="bi bi-box-arrow-in-right"></i>
-        sign_in
+        Sign in
     </div>
     <form :class="{ active: modal }" class="box" action="" method="post">
-        <h2>sign_in</h2>
-        <input v-model="email" type="email" placeholder="email" />
-        <input v-model="password" type="password" placeholder="password" />
+        <h2>Sign in</h2>
+        <input v-model="email" type="email" placeholder="Email" />
+        <input v-model="password" type="password" placeholder="Password" />
         <input type="checkbox" v-model="remember" name="remember" value="1" id="remember" />
-        <label for="remember">remember_me</label>
-        <input @click.prevent="login" type="submit" name="sing_up" :disabled="loading"  />
+        <label for="remember">Remember me</label>
+        <input @click.prevent="login" type="submit" name="sing_up" :disabled="loading" value="Submit" />
     </form>
     <div @click="modal = false" class="md-overlay" :class="{ active: modal }"></div>
 </div>
 </template>
 
-  
 <style>
   </style>
 
-  
 <script>
 import axios from "axios";
 
@@ -60,9 +58,11 @@ export default {
                             res.config.headers["X-XSRF-TOKEN"]
                         );
                         this.$store.dispatch("getToken");
+                        this.$store.dispatch('fetchUser');
                         this.$router.push({
                             name: "cabinet"
                         });
+
                     })
                     .catch((err) => {
                         // this.$store.commit("setLoading", false);

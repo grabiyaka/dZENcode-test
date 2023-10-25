@@ -1,9 +1,12 @@
 <template>
-<div>
+<div class="underline" v-if="$store.state.token.token">
     <div ref="quillEditor"></div>
+
     <div class="files-container">
+
         <input :id="fileInputId" type="file" @change="handleFileUpload" multiple>
         <label class="file-upload-button file-element" :for="fileInputId"></label>
+
         <div class="file-element" v-for="file in tempFiles" :key="file.name">
             <div>
                 <img v-if="isImage(file) || isGif(file)" :src="getSrc(file)" alt="Image" />
@@ -12,8 +15,10 @@
                 <button class="cross-delete" @click="removeTempFile(file)">&#10005</button>
             </div>
         </div>
+
     </div>
     <button @click="postCreate(post?.id)" class="btn reply-btn">{{ post?.id ?'Reply' : 'Submit' }}</button>
+    <button v-if="post?.id" @click="$store.commit('setReplyId', null)" class="btn delete-btn">Cancel</button>
 </div>
 </template>
 
@@ -66,7 +71,6 @@ export default {
         },
         handleFileUpload(event) {
             const selectedFiles = event.target.files;
-            console.log(URL.createObjectURL(selectedFiles[0]));
             if (selectedFiles.length > 0) {
                 this.tempFiles = this.tempFiles.concat(Array.from(selectedFiles));
             }
@@ -108,21 +112,18 @@ export default {
             return textFileExtensions.includes(fileExtension);
         },
         postCreate(postId = null) {
-            console.log(this.tempFiles.length);
             if (this.quill.root.innerHTML != '<p><br></p>' || this.tempFiles.length) {
                 let fd = new FormData()
                 const post = {
                     content: ''
                 }
 
-                console.log(this.$refs);
                 if (postId) {
                     post.content = this.quill.root.innerHTML;
                     post.parent_id = postId
 
                     this.tempFiles.forEach((file, index) => {
                         fd.append(`files[${index}]`, file);
-                        console.log(file);
                     });
                 } else {
                     post.content = this.quill.root.innerHTML;
@@ -137,27 +138,25 @@ export default {
                         fd.append(key, post[key]);
                     }
                 }
-                if (post.content) {
-                    axios.get("/sanctum/csrf-cookie").then((response) => {
-                        axios
-                            .post("/api/post", fd)
-                            .then((res) => {
-                                if (postId) {
-                                    console.log(res.data);
-                                } else {
-                                    console.log(res.data);
-                                    // this.post.content = ''
-                                    // this.quill.root.innerHTML = ''
-                                    // this.posts.unshift(res.data.data)
-                                }
-
-                            })
-                            .catch((err) => {});
-                    });
-                } else {
-                    alert('error');
-                }
-            } else{
+                axios.get("/sanctum/csrf-cookie").then((response) => {
+                    axios
+                        .post("/api/post", fd)
+                        .then((res) => {
+                            const result = []
+                            if (postId) {
+                                this.$store.commit('addPostToParent', {
+                                    parentId: postId,
+                                    newPost: res.data
+                                });
+                            } else {
+                                this.$store.commit('addPost', res.data);
+                            }
+                            this.quill.root.innerHTML = '<p><br></p>'
+                            this.tempFiles = []
+                        })
+                        .catch((err) => {});
+                });
+            } else {
                 alert('Nothing to submit')
             }
 

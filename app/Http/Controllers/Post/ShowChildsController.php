@@ -5,12 +5,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Post\PostResource;
 use App\Models\Post;
 
-class ShowController extends BaseController
+class ShowChildsController extends BaseController
 {
     public function __invoke(Post $post)
     {   
-        $page = request('page', 1);
-        $posts = $this->service->buildPostsTree($page);
+        $posts = $this->service->getChilds($post);
         return $posts;
     }
 }

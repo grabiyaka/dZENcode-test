@@ -1,10 +1,10 @@
 <template>
-<div  id="header">
+<div id="header">
     <div class="background"></div>
     <ul class="ui-header">
         <li :class="{optional: !$store.state.token.token}">
             <RouterLink class="nav-el" :to="{ name: 'home' }"><i class="bi bi-house-door-fill"></i> home
-               </RouterLink>
+            </RouterLink>
         </li>
 
         <LoginComponent class="" v-if="!$store.state.token.token" :btnClass="'nav-el'"></LoginComponent>
@@ -13,13 +13,13 @@
         </RegistrationComponent>
         <li class="optional" v-if="$store.state.token.token">
             <a class="nav-el" @click.prevent="logout"><i class="bi bi-door-open-fill"></i>exit
-                </a>
+            </a>
         </li>
         <li class="" v-if="$store.state.token.token">
             <RouterLink class="nav-el" :to="{ name: 'cabinet' }"><i class="bi bi-person-circle"></i> cabinet
-                </RouterLink>
+            </RouterLink>
         </li>
-        
+
     </ul>
 </div>
 </template>
@@ -67,19 +67,11 @@ export default {
                         this.$router.push({
                             name: 'home'
                         })
+
+                        this.$store.dispatch('fetchUser');
                     })
             }
         },
-    },
-    computed: {
-        lang: {
-            get() {
-                return this.$store.getters.getLang
-            },
-            set(lang) {
-                this.$store.commit('setLang', lang)
-            }
-        }
     },
 
 };
@@ -185,7 +177,7 @@ body {
     top: 50%;
     position: fixed;
     width: 30px;
-    padding: 40px;
+    padding: 40 20px;
     border: 2px solid #6E85B7;
     transform: translateX(-50%) translateY(-50%);
     background: #FFF5EE;
@@ -228,8 +220,9 @@ body {
 .box input[type="text"]:focus,
 .box input[type="password"]:focus,
 .box input[type="email"]:focus {
-    width: 280px;
+    width: 100%;
     border-color: #6E85B7;
+    
 }
 
 .box input[type="submit"] {

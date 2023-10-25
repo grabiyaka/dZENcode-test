@@ -1,22 +1,21 @@
 <template>
-<div >
+<div>
     <div @click="modal = true" :class="btnClass">
         <i class="bi bi-person-plus-fill"></i>
-        sign_up
+        Sign up
     </div>
     <form :class="{ active: modal }" class="box" action="" method="post">
-        <h2>sign_up</h2>
-        <input v-model="email" type="email" placeholder="email" required />
-        <input v-model="name" type="text" placeholder="name" required />
-        <input v-model="password" type="password" placeholder="password" required />
-        <input v-model="password_confirmation" type="password" placeholder="password_confirmation" required />
-        <input @click.prevent="register" type="submit" name="sing_up" :value="sign_up" />
+        <h2>Sign up</h2>
+        <input v-model="email" type="email" placeholder="Email" required />
+        <input v-model="name" type="text" placeholder="Name" required />
+        <input v-model="password" type="password" placeholder="Password" required />
+        <input v-model="password_confirmation" type="password" placeholder="Password confirmation" required />
+        <input @click.prevent="register" type="submit" name="sing_up" value="Sign up" />
     </form>
     <div @click="modal = false" class="md-overlay" :class="{ active: modal }"></div>
 </div>
 </template>
 
-  
 <script>
 import axios from 'axios';
 
@@ -81,32 +80,33 @@ export default {
                                             this.$router.push({
                                                 name: 'cabinet'
                                             })
+
+                                            this.$store.dispatch('fetchUser');
                                         })
                                         .catch(err => {
 
                                         })
                                 } else {
-                                    alert(this.fill_name_field)
+                                    alert('Fill name field')
                                 }
                             } else {
-                                alert(this.password_not_confirmed)
+                                alert('Password not confirmed')
                             }
 
                         } else {
-                            alert(this.wrong_password);
+                            alert('Wrong password');
                         }
                     } else {
-                        alert(this.incorrect_email);
+                        alert('Incorrect email');
                     }
                 })
             } else {
-                alert(this.fill_fields)
+                alert('Fill fields')
             }
         },
     }
 }
 </script>
 
-  
 <style>
   </style>

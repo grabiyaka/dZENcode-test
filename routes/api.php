@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Post\ShowController;
+use App\Http\Controllers\Post\ShowChildsController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -22,6 +23,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::get('/posts', ShowController::class)->name('show');
+Route::post('/post/childs/{post}', ShowChildsController::class)->name('showChilds');
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::group(['namespace' => 'App\Http\Controllers\Post', 'prefix' => 'post'], function () {

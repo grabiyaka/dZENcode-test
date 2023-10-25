@@ -14,7 +14,9 @@ export default {
         FooterComponent
     },
     data: () => ({}),
-    mounted() {}
+    mounted() {
+        this.$store.dispatch('fetchUser');
+    }
 };
 </script>
     
@@ -36,6 +38,10 @@ export default {
 
 $lightblue: #b2c8df;
 $darkblue: #6e85b7;
+
+#viewbox{
+    padding: 10px;
+}
 
 .border-block {
     border-bottom: 5px solid #8a8a8a;
