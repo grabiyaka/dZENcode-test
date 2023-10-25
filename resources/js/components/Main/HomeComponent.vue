@@ -6,7 +6,7 @@
         <quill-editor ref="quillComponent"></quill-editor>
     </div>
 
-    <CommentTree :replyPostId="replyPostId" :posts="posts"></CommentTree>
+    <CommentTree :replyPostId="replyPostId" :posts="$store.getters.getPosts"></CommentTree>
     <div v-if="!posts.length">
         <h3>No any post(</h3>
     </div>
@@ -40,8 +40,8 @@ export default {
                 axios
                     .get(`api/posts/`)
                     .then((res) => {
-                        console.log(res.data);
-                        this.posts = res.data;
+                        this.$store.commit('setPosts', res.data)
+                        console.log(this.$store.getters.getPosts);
                     })
                     .catch((err) => {});
             } catch (error) {}

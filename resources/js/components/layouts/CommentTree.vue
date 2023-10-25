@@ -17,11 +17,11 @@
             <div class="post-content">
                 <div class="post-text" v-html="post.content"></div>
                 <div class="files-container" v-if="post.files">
-                    <div class="file-element" v-for="file in post.files" :key="file.name">
+                    <div class="file-element" v-for="(file, index) in post.files" :key="file.id">
                         <img v-if="isImage(file) || isGif(file)" :src="'/storage/'+file.path" alt="Image" />
                         <pre v-else-if="isTextFile(file)">{{ file.content }}</pre>
                         <span v-else>{{ file.name }}</span>
-                        <button class="cross-delete" @click="deleteFile(file)">&#10005</button>
+                        <button class="cross-delete" @click="deleteFile(file, post.id)">&#10005</button>
                     </div>
                 </div>
             </div>
@@ -31,7 +31,7 @@
 
                 <div class="replyPost" v-if="post.id == replyPostId">
                     <quill-editor :post="post" :ref="'quillReply'"></quill-editor>
-                    
+
                 </div>
             </div>
             <CommentTree v-if="post.posts" :posts="post.posts"></CommentTree>
@@ -106,7 +106,7 @@ export default {
                         axios
                             .delete(`/api/post/${id}`)
                             .then((res) => {
-                                this.posts = this.posts.filter(el => el.id != id);
+                                this.removePostById(this.$store.getters.getPosts, id)
                             })
                             .catch((err) => {});
                     }
@@ -153,16 +153,65 @@ export default {
             const fileExtension = file.name.split('.').pop().toLowerCase();
             return textFileExtensions.includes(fileExtension);
         },
-        deleteFile(file) {
-            axios.get("/sanctum/csrf-cookie").then((response) => {
-                axios
-                    .delete(`/api/file/${file.id}`)
-                    .then((res) => {
-                        alert('deleted!');
-                    })
-                    .catch((err) => {});
-            });
+        deleteFile(file, id) {
+            if (confirm('Delte file?')) {
+                console.log()
+                axios.get("/sanctum/csrf-cookie").then((response) => {
+                    axios
+                        .delete(`/api/file/${file.id}`)
+                        .then((res) => {
+                            this.removeFileByIdAndPostId(this.$store.getters.getPosts, file.id, id)
+                        })
+                        .catch((err) => {});
+                });
+            }
+        },
+        removeFileByIdAndPostId(posts, fileId, postId) {
+            for (const post of posts) {
+
+                if (post.id === postId) {
+
+                    if (post.files) {
+                        const index = post.files.findIndex(file => file.id === fileId);
+                        if (index !== -1) {
+                            post.files.splice(index, 1);
+                            return posts;
+                        }
+                    }
+
+                }
+
+                if (post.posts) {
+
+                    const updatedPosts = this.removeFileByIdAndPostId(post.posts, fileId, postId);
+                    if (updatedPosts !== post.posts) {
+                        post.posts = updatedPosts;
+                        return posts;
+                    }
+
+                }
+            }
+            return posts;
+        },
+        removePostById(posts, postId) {
+            for (let i = posts.length - 1; i >= 0; i--) {
+                const post = posts[i];
+                if (post.id === postId) {
+                    posts.splice(i, 1);
+                    return posts; 
+                }
+
+                if (post.posts) {
+                    const updatedPosts = this.removePostById(post.posts, postId);
+                    if (updatedPosts !== post.posts) {
+                        post.posts = updatedPosts;
+                        return posts;
+                    }
+                }
+            }
+            return posts;
         }
+
     }
 };
 </script>
