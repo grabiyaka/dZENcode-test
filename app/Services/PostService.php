@@ -49,7 +49,7 @@ class PostService
 
     public function buildPostsTree($page)
     {
-        $posts = Post::where('parent_id', null)->paginate(5, ['*'], 'page', $page);
+        $posts = Post::where('parent_id', null)->paginate(25, ['*'], 'page', $page);
 
         foreach ($posts as $post) {
             $this->buildSubTree($post);
@@ -66,11 +66,10 @@ class PostService
         $files = File::where('post_id', $post->id)->get();
         $post->setAttribute('files', $files);
         
-        // Проверьте, есть ли еще записи, и присвойте ключ 'morePosts' к родительскому посту
         $post->setAttribute('more_posts', $morePosts);
         
         foreach ($subposts as $subpost) {
-            // Вызовите функцию buildSubTree для детей
+
             $this->buildSubTree($subpost);
         }
         

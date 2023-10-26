@@ -488,4 +488,11 @@ body {
         height: 15px;
     }
 }
+
+.ellipsis-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 320px; 
+}
 </style>

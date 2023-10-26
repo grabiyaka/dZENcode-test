@@ -119,12 +119,19 @@ export default {
     flex-wrap: wrap;
     padding: 10px;
     margin: 5px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px;
 
     .file-element {
         position: relative;
-        max-width: 240;
-        max-height: 320;
-        padding: 10px;
+        width: 100px;
+        height: 100px;
+        overflow: hidden;
+        border: 2px solid #ddd;
+        /* Цвет границы */
+        border-radius: 5px;
+        /* Скругленные углы */
     }
 
     .cross-delete {
@@ -182,10 +189,8 @@ export default {
     .active .page-link {
         background-color: #0056b3;
         transform: scale(1.05);
-        /* Увеличиваем размер для активной страницы */
     }
 
-    /* Анимация для перелистывания влево и вправо */
     .page-item {
         margin: 0 5px;
         transition: transform 0.3s;
@@ -193,12 +198,10 @@ export default {
 
     .page-item.active-prev {
         transform: translateX(-10px);
-        /* Для активной страницы слева */
     }
 
     .page-item.active-next {
         transform: translateX(10px);
-        /* Для активной страницы справа */
     }
 
 }

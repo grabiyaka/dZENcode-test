@@ -1,7 +1,155 @@
+<style lang="scss">
+.block-posts {
+    background-color: #f5f5f5;
+
+    .block-post {
+        position: relative;
+        margin: 10px 0;
+        padding: 0 0 10px 10px;
+        border: 1px solid #ddd;
+        background-color: #fff;
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+
+            .user-avatar {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                overflow: hidden;
+                margin-right: 10px;
+
+                img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                }
+            }
+
+            .user-name {
+                font-weight: bold;
+                color: #007bff;
+            }
+
+            .post-time {
+                margin-left: auto;
+                color: #888;
+            }
+        }
+
+        .post-content {
+            .post-text {
+                margin-top: 5px;
+            }
+        }
+
+        .post-control-panel {
+            margin-top: 10px;
+        }
+    }
+
+    .post-time {
+        font-style: italic;
+        color: #888;
+    }
+
+    .btn {
+        background-color: #007bff;
+        color: #fff;
+        padding: 5px 10px;
+        border: none;
+        cursor: pointer;
+        margin-right: 10px;
+        border-radius: 5px;
+    }
+
+    .delete-btn {
+        background-color: #d9534f;
+    }
+
+    .reply-btn {
+        background-color: #5bc0de;
+    }
+
+    .gray-btn {
+        background-color: #808080;
+    }
+
+    .img-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9;
+        transition: all ease .5s;
+
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    .img-background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        z-index: -1;
+        opacity: 0;
+        transition: opacity 0.3s;
+        cursor: pointer;
+        transition: all ease .5s;
+
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    .img-container img {
+        max-width: 90%;
+        max-height: 90vh;
+        object-fit: contain;
+        margin-top: 90vh;
+        transition: all ease .5s;
+        border-radius: 5px;
+
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    /* Анимация появления фона */
+    .img-container.active,
+    .img-background.active,
+    img.active {
+        opacity: 1;
+        visibility: visible;
+        margin: 0;
+    }
+
+    .img-background.active {
+        opacity: 0.3;
+    }
+
+    .reply-block {
+        padding: 0 5px;
+        background: #80808050;
+    }
+
+}
+</style>
+
 <template>
 <div>
     <div class="block-posts" v-if="posts.length">
         <div v-for="(post, index) in posts" class="block-post">
+            <div class="reply-block" v-if="parentPost?.parent_id">
+                <p>{{ removeTagsAndTruncate(parentPost.content) }}...</p>
+            </div>
             <button v-if="$store.getters.getUser?.id == post.user_id" @click="deletePost(post.id)" class="cross-delete">&#10005</button>
 
             <div class="user-info">
@@ -17,11 +165,11 @@
 
             <div class="post-content">
                 <div class="post-text" v-html="post.content"></div>
-                <div class="files-container" v-if="post.files">
+                <div v-if="post.files" class="files-container">
                     <div class="file-element" v-for="(file, index) in post.files" :key="file.id">
                         <img v-if="isImage(file) || isGif(file)" :src="'/storage/'+file.path" alt="Image" @click="openImg('/storage/'+file.path)" />
-                        <pre v-else-if="isTextFile(file)">{{ file.content }}</pre>
-                        <span v-else>{{ file.name }}</span>
+                        <span @click="openModalTxt('/storage/'+file.path)" v-else-if="isTextFile(file)"><i class="bi bi-filetype-txt"></i></span>
+                        <span v-else class="unknow-file ellipsis-text"><i class="bi bi-file-earmark"></i>{{ truncateText(file.name, 20) }}</span>
                         <button v-if="$store.getters.getUser?.id == post.user_id" class="cross-delete" @click="deleteFile(file, post.id)">&#10005</button>
                     </div>
                 </div>
@@ -29,6 +177,10 @@
             <div :class="{active: img.active}" class="img-container">
                 <img :class="{active: img.active}" :src="img.path" alt="" @click="img.active = false">
                 <div :class="{active: img.active}" class="img-background" @click="img.active = false"></div>
+            </div>
+            <div v-if="txt.active" :class="{active: txt.active}" class="img-container">
+                <text-viewer :filePath="txt.path"></text-viewer>
+                <div :class="{active: txt.active}" class="img-background" @click="txt.active = false"></div>
             </div>
 
             <div class="post-control-panel">
@@ -39,7 +191,7 @@
                 </div>
             </div>
             <div v-if="post.posts">
-                <CommentTree :posts="post.posts"></CommentTree>
+                <CommentTree :parentPost="post" :posts="post.posts"></CommentTree>
                 <button class="btn gray-btn" v-if="post.more_posts" @click="downloadMoreComments(post.id, index)">Download more comments...</button>
             </div>
         </div>
@@ -49,21 +201,31 @@
 
 <script>
 import QuillEditor from "./QuillEditor.vue";
+import TextViewer from "./TextViewer.vue"
+import PopupComponent from "./PopupComponent.vue";
 
 export default {
     props: {
-        posts: Object
+        posts: Object,
+        parentPost: Object
     },
     data() {
         return {
             img: {
                 active: false,
                 path: ''
+            },
+            txt: {
+                active: false,
+                path: ''
             }
+
         }
     },
     components: {
-        QuillEditor
+        QuillEditor,
+        TextViewer,
+        PopupComponent
     },
     methods: {
         postCreate(postId = null) {
@@ -241,152 +403,34 @@ export default {
         openImg(path) {
             this.img.path = path
             this.img.active = true
+        },
+       
+        downloadFile() {
+            // Создаем ссылку для скачивания файла
+            const blob = new Blob([this.fileContent], {
+                type: 'text/plain'
+            });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'textfile.txt'; // Задайте имя файла
+            a.click();
+            window.URL.revokeObjectURL(url);
+        },
+        openModalTxt(path) {
+            console.log(path);
+            this.txt.path = path
+            this.txt.active = true
+        },
+      
+        removeTagsAndTruncate(htmlContent) {
+            const div = document.createElement('div');
+            div.innerHTML = htmlContent;
+
+            const textContent = div.textContent;
+            return textContent.slice(0, 20);
         }
 
     }
 };
 </script>
-
-<style lang="scss">
-.block-posts {
-    padding: 10px 0 10px 10px;
-    margin: 10px 3px;
-    background-color: #f5f5f5;
-
-    .block-post {
-        position: relative;
-        margin: 10px 0;
-        padding: 0px 0px 10px 10px;
-        border: 1px solid #ddd;
-        background-color: #fff;
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-
-            .user-avatar {
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
-                overflow: hidden;
-                margin-right: 10px;
-
-                img {
-                    width: 100%;
-                    height: 100%;
-                    object-fit: cover;
-                }
-            }
-
-            .user-name {
-                font-weight: bold;
-                color: #007bff;
-            }
-
-            .post-time {
-                margin-left: auto;
-                color: #888;
-            }
-        }
-
-        .post-content {
-            .post-text {
-                margin-top: 5px;
-            }
-        }
-
-        .post-control-panel {
-            margin-top: 10px;
-        }
-    }
-
-    .post-time {
-        font-style: italic;
-        color: #888;
-    }
-
-    .btn {
-        background-color: #007bff;
-        color: #fff;
-        padding: 5px 10px;
-        border: none;
-        cursor: pointer;
-        margin-right: 10px;
-        border-radius: 5px;
-    }
-
-    .delete-btn {
-        background-color: #d9534f;
-    }
-
-    .reply-btn {
-        background-color: #5bc0de;
-    }
-
-    .gray-btn {
-        background-color: #808080;
-    }
-
-    .img-container {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 9;
-        transition: all ease .5s;
-
-        opacity: 0;
-        visibility: hidden;
-    }
-
-    .img-background {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.7);
-        z-index: -1;
-        opacity: 0;
-        transition: opacity 0.3s;
-        cursor: pointer;
-        transition: all ease .5s;
-
-        opacity: 0;
-        visibility: hidden;
-    }
-
-    .img-container img {
-        max-width: 90%;
-        max-height: 90vh;
-        object-fit: contain;
-        margin-top: 90vh;
-        transition: all ease .5s;
-        outline: solid 5px whitesmoke;
-        border-radius: 5px;
-        box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
-
-        opacity: 0;
-        visibility: hidden;
-    }
-
-    /* Анимация появления фона */
-    .img-container.active,
-    .img-background.active,
-    img.active {
-        opacity: 1;
-        visibility: visible;
-        margin: 0;
-    }
-
-    .img-background.active {
-        opacity: 0.3;
-    }
-
-}
-</style>

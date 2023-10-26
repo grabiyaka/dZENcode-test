@@ -4,36 +4,41 @@
 
     <div class="files-container">
 
-        <input :id="fileInputId" type="file" @change="handleFileUpload" multiple>
+        <input :id="fileInputId" type="file" @change="handleFileUpload" accept=".jpg, .jpeg, .gif, .png, .txt">
         <label class="file-upload-button file-element" :for="fileInputId"></label>
 
         <div class="file-element" v-for="file in tempFiles" :key="file.name">
             <div>
                 <img v-if="isImage(file) || isGif(file)" :src="getSrc(file)" alt="Image" />
-                <pre v-else-if="isTextFile(file)">{{ file.content }}</pre>
-                <span v-else>{{ file.name }}</span>
-                <button class="cross-delete" @click="removeTempFile(file)">&#10005</button>
+                <pre v-else-if="isTextFile(file)"><text-viewer :file="file"></text-viewer></pre>
+                <span v-else class="unknow-file"><i class="bi bi-file-earmark"></i>{{ truncateText(file.name, 20) }}</span>
+                <button :disabled="loading" class="cross-delete" @click="removeTempFile(file)">&#10005</button>
             </div>
         </div>
 
     </div>
-    <button @click="postCreate(post?.id)" class="btn reply-btn">{{ post?.id ?'Reply' : 'Submit' }}</button>
-    <button v-if="post?.id" @click="$store.commit('setReplyId', null)" class="btn delete-btn">Cancel</button>
+    <button :disabled="loading" @click="postCreate(post?.id)" class="btn reply-btn">{{ post?.id ?'Reply' : 'Submit' }}</button>
+    <button :disabled="loading" v-if="post?.id" @click="$store.commit('setReplyId', null)" class="btn delete-btn">Cancel</button>
 </div>
 </template>
 
 <script>
 import Quill from 'quill';
 import 'quill/dist/quill.snow.css';
+import TextViewer from "./TextViewer.vue";
 
 export default {
+    components:{
+        TextViewer
+    },
     props: {
         value: String,
         post: null
     },
     data() {
         return {
-            tempFiles: []
+            tempFiles: [],
+            loading: false
         }
     },
     computed: {
@@ -113,6 +118,7 @@ export default {
         },
         postCreate(postId = null) {
             if (this.quill.root.innerHTML != '<p><br></p>' || this.tempFiles.length) {
+                this.loading = true
                 let fd = new FormData()
                 const post = {
                     content: ''
@@ -153,13 +159,26 @@ export default {
                             }
                             this.quill.root.innerHTML = '<p><br></p>'
                             this.tempFiles = []
+                            this.loading = false
                         })
-                        .catch((err) => {});
+                        .catch((err) => {
+                            alert('error')
+                            this.loading = false
+                        });
                 });
             } else {
                 alert('Nothing to submit')
             }
 
+        },
+        truncateText(text, maxLength) {
+            if (text.length > maxLength) {
+                const halfLength = Math.floor(maxLength / 2) - 2;
+                const beginning = text.slice(0, halfLength);
+                const end = text.slice(-halfLength);
+                return beginning + '...' + end;
+            }
+            return text;
         },
     },
     watch: {
@@ -171,5 +190,12 @@ export default {
 </script>
 
 <style lang="scss">
-
+    .unknow-file{
+        display: flexbox;
+        
+        i{
+            display: block;
+            font-size: 150px;
+        }
+    }
 </style>

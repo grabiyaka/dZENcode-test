@@ -27,13 +27,14 @@ class StoreController extends BaseController
         if ($files) {
             foreach ($files as $file) {
                 $extension = $file->getClientOriginalExtension();
+                $fileName = $file->getClientOriginalName();
                 $uniqueFileName = Str::random(40) . '.' . $extension;
                 $path = $file->storeAs('uploads', $uniqueFileName);
                 $path = $file->store('uploads', 'public');
 
 
                 $fileOptions = [
-                    'name' => $uniqueFileName,
+                    'name' => $fileName,
                     'path' => $path,
                     'post_id' => $postResource['id']
                 ];
