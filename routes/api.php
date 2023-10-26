@@ -33,6 +33,11 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
             Route::delete('/{post}', DeleteController::class);
         }
     );
+    Route::group(['namespace' => 'App\Http\Controllers\Avatar', 'prefix' => 'avatar'], function () { 
+            Route::post('/', StoreController::class);
+            Route::delete('/{post}', DeleteController::class);
+        }
+    );
     Route::group(['namespace' => 'App\Http\Controllers\File', 'prefix' => 'file'], function () {
             Route::post('/', StoreController::class);
             Route::delete('/{file}', DeleteController::class);

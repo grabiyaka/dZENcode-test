@@ -41,6 +41,7 @@ $darkblue: #6e85b7;
 
 #viewbox{
     padding: 10px;
+    min-height: 70vh;
 }
 
 .border-block {

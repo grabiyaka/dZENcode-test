@@ -21,6 +21,7 @@ export const posts = {
                             post.posts = [];
                         }
                         post.posts.push(newPost);
+                        state.replyId = null
                         return;
                     }
                     if (post.posts) {

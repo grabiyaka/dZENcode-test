@@ -7,7 +7,8 @@
             <div class="user-info">
 
                 <div class="user-avatar">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTkgA_xdu7bbkn44ysPIKt7scHEXEqsiIMUWQ&usqp=CAU" alt="User Avatar" />
+                    <img v-if="!$store.getters.getUser?.avatar" src="/images/default-avatar.png" alt="User Avatar" />
+                    <img v-if="$store.getters.getUser?.avatar" :src="'/storage/'+$store.getters.getUser?.avatar" alt="User Avatar" />
                 </div>
 
                 <span class="user-name">{{ post.user_name }}:</span>
@@ -18,12 +19,16 @@
                 <div class="post-text" v-html="post.content"></div>
                 <div class="files-container" v-if="post.files">
                     <div class="file-element" v-for="(file, index) in post.files" :key="file.id">
-                        <img v-if="isImage(file) || isGif(file)" :src="'/storage/'+file.path" alt="Image" />
+                        <img v-if="isImage(file) || isGif(file)" :src="'/storage/'+file.path" alt="Image" @click="openImg('/storage/'+file.path)" />
                         <pre v-else-if="isTextFile(file)">{{ file.content }}</pre>
                         <span v-else>{{ file.name }}</span>
                         <button v-if="$store.getters.getUser?.id == post.user_id" class="cross-delete" @click="deleteFile(file, post.id)">&#10005</button>
                     </div>
                 </div>
+            </div>
+            <div :class="{active: img.active}" class="img-container">
+                <img :class="{active: img.active}" :src="img.path" alt="" @click="img.active = false">
+                <div :class="{active: img.active}" class="img-background" @click="img.active = false"></div>
             </div>
 
             <div class="post-control-panel">
@@ -50,7 +55,12 @@ export default {
         posts: Object
     },
     data() {
-        return {}
+        return {
+            img: {
+                active: false,
+                path: ''
+            }
+        }
     },
     components: {
         QuillEditor
@@ -227,6 +237,10 @@ export default {
                 }
             }
             return posts;
+        },
+        openImg(path) {
+            this.img.path = path
+            this.img.active = true
         }
 
     }
@@ -312,6 +326,66 @@ export default {
 
     .gray-btn {
         background-color: #808080;
+    }
+
+    .img-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9;
+        transition: all ease .5s;
+
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    .img-background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        z-index: -1;
+        opacity: 0;
+        transition: opacity 0.3s;
+        cursor: pointer;
+        transition: all ease .5s;
+
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    .img-container img {
+        max-width: 90%;
+        max-height: 90vh;
+        object-fit: contain;
+        margin-top: 90vh;
+        transition: all ease .5s;
+        outline: solid 5px whitesmoke;
+        border-radius: 5px;
+        box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
+
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    /* Анимация появления фона */
+    .img-container.active,
+    .img-background.active,
+    img.active {
+        opacity: 1;
+        visibility: visible;
+        margin: 0;
+    }
+
+    .img-background.active {
+        opacity: 0.3;
     }
 
 }

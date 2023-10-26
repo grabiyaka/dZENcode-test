@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\File;
 use Str;
+use Intervention\Image\ImageManagerStatic as Image;
 
 
 class StoreController extends BaseController
