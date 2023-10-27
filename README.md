@@ -28,6 +28,9 @@ To link the public storage directory, run:
 
     php artisan storage:link
 
+### 7. And if you want: create new users and posts 
+    php artisan db:seed --class=DatabaseSeeder
+
 ## Project Description:
 This project is a test assignment from dZENcode. It functions as a mini-forum where users can register, create posts, and add comments to those posts. Users also have the option to attach images to posts and comments. Each user has a personal profile where they can change their avatar.
 
