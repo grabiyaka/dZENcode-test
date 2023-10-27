@@ -39,7 +39,7 @@ export default {
 $lightblue: #b2c8df;
 $darkblue: #6e85b7;
 
-#viewbox{
+#viewbox {
     padding: 10px;
     min-height: 70vh;
 }
@@ -144,16 +144,16 @@ button[disabled] {
     flex-wrap: wrap;
 }
 
-
 .images-box {
     display: flex;
     flex-wrap: wrap;
 }
 
-
 input[type="file"] {
-    display: none; /* Скрываем оригинальный input */
+    display: none;
+    /* Скрываем оригинальный input */
 }
+
 label.file-upload-button {
     font-size: 16px;
     background: #b2c8df;
@@ -165,7 +165,8 @@ label.file-upload-button {
     align-items: center;
     cursor: pointer;
     border: none;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Добавляем красивую тень */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    /* Добавляем красивую тень */
     outline: none;
     transition: all ease 0.5s;
     position: relative;
@@ -173,8 +174,10 @@ label.file-upload-button {
 
 label.file-upload-button::before {
     content: "+";
-    font-size: 36px; /* Увеличиваем размер плюсика */
-    color: rgba(0, 0, 0, 0.6); /* Делаем плюсик прозрачным */
+    font-size: 36px;
+    /* Увеличиваем размер плюсика */
+    color: rgba(0, 0, 0, 0.6);
+    /* Делаем плюсик прозрачным */
     position: absolute;
 }
 
@@ -188,10 +191,9 @@ label.file-upload-button::before {
 label.file-upload-button:hover {
     background: #6e85b7;
     color: white;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5); /* Увеличиваем тень при наведении */
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    /* Увеличиваем тень при наведении */
 }
-
-
 
 .image-box {
     align-items: center;
@@ -227,7 +229,6 @@ form {
     margin-left: 3%;
     margin-right: 3%;
 }
-
 
 input[type="text"],
 input[type="number"],
@@ -266,7 +267,6 @@ div {
     border-radius: 5px;
 }
 
-
 body {
     height: 100%;
     min-height: 100vh;
@@ -276,31 +276,63 @@ body {
 }
 
 .cross-delete {
-        position: absolute;
-        top: -15px;
-        right: 5px;
-        font-size: 20px;
-        color: whitesmoke;
-        border: none;
-        cursor: pointer;
-        width: 30px;
-        height: 30px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        transition: transform 0.5s;
-        background: #d9534f;
-    }
+    position: absolute;
+    top: -15px;
+    right: 5px;
+    font-size: 20px;
+    color: whitesmoke;
+    border: none;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: transform 0.5s;
+    background: #d9534f;
+    padding: 0;
+}
 
-    .cross-delete:hover {
-        transform: rotate(180deg);
-    }
+.cross-delete:hover {
+    transform: rotate(180deg);
+}
 
 .ellipsis-text {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 320px; 
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 320px;
+}
+
+.btn {
+    background-color: #007bff;
+    color: #fff;
+    padding: 5px 10px;
+    border: none;
+    cursor: pointer;
+    margin-right: 10px;
+    border-radius: 5px;
+}
+
+.delete-btn {
+    background-color: #d9534f;
+    &:hover{
+        background-color: #b64441;
+    }
+}
+
+.reply-btn {
+    background-color: #5bc0de;
+    &:hover{
+        background-color: #4695ad;
+    }
+}
+
+.gray-btn {
+    background-color: #808080;
+    &:hover{
+        background-color: #6b6b6b;
+    }
 }
 </style>

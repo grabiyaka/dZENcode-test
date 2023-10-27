@@ -47,41 +47,44 @@ class PostService
         $post->delete();
     }
 
-    public function buildPostsTree($page)
+    public function buildPostsTree($page, $sortField, $sortDirection)
     {
-        $sortField = request('sortField', 'created_at'); 
-        $sortDirection = request('sortDirection', 'desc');
-    
-        $posts = Post::where('parent_id', null)
-            ->orderBy($sortField, $sortDirection)
-            ->paginate(25, ['*'], 'page', $page);
-    
+        $query = Post::where('parent_id', null);
+
+        $query->join('users', 'posts.user_id', '=', 'users.id')
+            ->select('posts.*', 'users.email', 'users.avatar')
+            ->orderBy($sortField === 'email' ? 'users.email' : 'posts.' . $sortField, $sortDirection);
+
+        $posts = $query->paginate(25, ['*'], 'page', $page);
+
         foreach ($posts as $post) {
             $this->buildSubTree($post);
         }
-    
+
         return $posts;
     }
 
     protected function buildSubTree(Post $post)
     {
-        $subposts = Post::where('parent_id', $post->id)->take(2)->get(); 
+        $subposts = Post::where('parent_id', $post->id)->join('users', 'posts.user_id', '=', 'users.id')
+            ->select('posts.*', 'users.email', 'users.avatar')->take(2)->get();
         $morePosts = Post::where('parent_id', $post->id)->take(3)->count() > 2;
-        
+
         $files = File::where('post_id', $post->id)->get();
         $post->setAttribute('files', $files);
-        
+
         $post->setAttribute('more_posts', $morePosts);
-        
+
         foreach ($subposts as $subpost) {
 
             $this->buildSubTree($subpost);
         }
-        
+
         $post->setAttribute('posts', $subposts);
     }
 
-    public function getChilds($post){
+    public function getChilds($post)
+    {
         $posts = Post::where('parent_id', $post->id)->get();
 
         foreach ($posts as $post) {

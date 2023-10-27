@@ -55,28 +55,6 @@
         color: #888;
     }
 
-    .btn {
-        background-color: #007bff;
-        color: #fff;
-        padding: 5px 10px;
-        border: none;
-        cursor: pointer;
-        margin-right: 10px;
-        border-radius: 5px;
-    }
-
-    .delete-btn {
-        background-color: #d9534f;
-    }
-
-    .reply-btn {
-        background-color: #5bc0de;
-    }
-
-    .gray-btn {
-        background-color: #808080;
-    }
-
     .img-container {
         position: fixed;
         top: 0;
@@ -99,7 +77,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(0, 0, 0, 0.7);
+        background-color: rgba(0, 0, 0, 0.171);
         z-index: -1;
         opacity: 0;
         transition: opacity 0.3s;
@@ -115,7 +93,6 @@
         max-height: 90vh;
         object-fit: contain;
         margin-top: 90vh;
-        transition: all ease .5s;
         border-radius: 5px;
 
         opacity: 0;
@@ -140,6 +117,20 @@
         background: #80808050;
     }
 
+    .imgFlipBtn {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: rgba(190, 190, 190, 0.616);
+        border: none;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        color: #000000;
+        cursor: pointer;
+    }
+
 }
 </style>
 
@@ -155,8 +146,8 @@
             <div class="user-info">
 
                 <div class="user-avatar">
-                    <img v-if="!$store.getters.getUser?.avatar" src="/images/default-avatar.png" alt="User Avatar" />
-                    <img v-if="$store.getters.getUser?.avatar" :src="'/storage/'+$store.getters.getUser?.avatar" alt="User Avatar" />
+                    <img v-if="!post.avatar" src="/images/default-avatar.png" alt="User Avatar" />
+                    <img v-if="post.avatar" :src="'/storage/'+post.avatar" alt="User Avatar" />
                 </div>
 
                 <span class="user-name">{{ post.user_name }}:</span>
@@ -167,7 +158,7 @@
                 <div class="post-text" v-html="post.content"></div>
                 <div v-if="post.files" class="files-container">
                     <div class="file-element" v-for="(file, index) in post.files" :key="file.id" :style="{'background-image': isImage(file) || isGif(file) ? `url(${'/storage/'+file.path})` : 'none'}">
-                        <div v-if="isImage(file) || isGif(file)" @click="openImg('/storage/'+file.path)" ></div>
+                        <div v-if="isImage(file) || isGif(file)" @click="openImg('/storage/'+file.path)"></div>
                         <div @click="openModalTxt('/storage/'+file.path)" v-else-if="isTextFile(file)"><i class="bi bi-filetype-txt"></i></div>
                         <p>{{ file.name }}</p>
                         <button v-if="$store.getters.getUser?.id == post.user_id" class="cross-delete" @click="deleteFile(file, post.id)">&#10005</button>
@@ -175,8 +166,9 @@
                 </div>
             </div>
             <div :class="{active: img.active}" class="img-container">
-                <img :class="{active: img.active}" :src="img.path" alt="" @click="img.active = false">
-                <div :class="{active: img.active}" class="img-background" @click="img.active = false"></div>
+                <img :class="{active: img.active}" :style="img.style" :src="img.path" alt="" @click="closeImg">
+                <button class="imgFlipBtn" @click="changeImgStyle"><i class="bi bi-arrow-clockwise"></i></button>
+                <div :class="{active: img.active}" class="img-background" @click="closeImg"></div>
             </div>
             <div v-if="txt.active" :class="{active: txt.active}" class="img-container">
                 <text-viewer :filePath="txt.path"></text-viewer>
@@ -213,7 +205,12 @@ export default {
         return {
             img: {
                 active: false,
-                path: ''
+                path: '',
+                style: {
+                    transform: 'none',
+                    transition: 'all ease 0.5s'
+                },
+                rotate: 0
             },
             txt: {
                 active: false,
@@ -234,14 +231,12 @@ export default {
                 content: ''
             }
 
-            console.log(this.$refs);
             if (postId) {
                 post.content = this.$refs.quillReply[0].quill.root.innerHTML;
                 post.parent_id = postId
 
                 this.$refs.quillReply[0].tempFiles.forEach((file, index) => {
                     fd.append(`files[${index}]`, file);
-                    console.log(file);
                 });
             } else post.content = this.$refs.quillComponent.quill.root.innerHTML;
 
@@ -256,14 +251,11 @@ export default {
                         .post("/api/post", fd)
                         .then((res) => {
                             if (postId) {
-                                console.log(res.data);
                             } else {
-                                console.log(res.data);
                                 this.post.content = ''
                                 this.quill.root.innerHTML = ''
                                 const result = this.posts.unshift(res.data.data)
                                 this.$store.commit('setPosts', result)
-                                console.log(this.$store.getters.getPosts);
                             }
 
                         })
@@ -344,7 +336,6 @@ export default {
         },
         deleteFile(file, id) {
             if (confirm('Delte file?')) {
-                console.log()
                 axios.get("/sanctum/csrf-cookie").then((response) => {
                     axios
                         .delete(`/api/file/${file.id}`)
@@ -400,11 +391,7 @@ export default {
             }
             return posts;
         },
-        openImg(path) {
-            this.img.path = path
-            this.img.active = true
-        },
-       
+
         downloadFile() {
             // Создаем ссылку для скачивания файла
             const blob = new Blob([this.fileContent], {
@@ -418,18 +405,31 @@ export default {
             window.URL.revokeObjectURL(url);
         },
         openModalTxt(path) {
-            console.log(path);
             this.txt.path = path
             this.txt.active = true
         },
-      
+
+        changeImgStyle() {
+            this.img.rotate += 90
+
+            this.img.style.transform = `rotate(${this.img.rotate}deg)`
+        },
+
         removeTagsAndTruncate(htmlContent) {
             const div = document.createElement('div');
             div.innerHTML = htmlContent;
 
             const textContent = div.textContent;
             return textContent.slice(0, 20);
-        }
+        },
+
+        closeImg(){
+            this.img.active = false 
+        },
+        openImg(path) {
+            this.img.active = true
+            this.img.path = path
+        },
 
     }
 };

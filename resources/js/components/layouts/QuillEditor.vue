@@ -1,17 +1,20 @@
 <template>
 <div class="underline" v-if="$store.state.token.token">
     <div ref="quillEditor"></div>
-
+    <i class="bi bi-info-circle"></i><span>The image should be 320 by 240 pixels, and when attempting to upload an image larger in size, it is automatically resized.</span>
     <div class="files-container">
 
         <input :id="fileInputId" type="file" @change="handleFileUpload" accept=".jpg, .jpeg, .gif, .png, .txt">
         <label class="file-upload-button file-element" :for="fileInputId"></label>
 
         <div class="file-element" v-for="file in tempFiles" :key="file.name">
+            <span v-if="isTextFile(file)">{{ file.name }}</span>
             <div>
                 <img v-if="isImage(file) || isGif(file)" :src="getSrc(file)" alt="Image" />
-                <pre v-else-if="isTextFile(file)"><text-viewer :file="file"></text-viewer></pre>
-                <span v-else class="unknow-file"><i class="bi bi-file-earmark"></i>{{ truncateText(file.name, 20) }}</span>
+                <div v-else-if="isTextFile(file)">
+                    <i class="bi bi-filetype-txt"></i>
+                </div>
+                <!-- <span v-else class="unknow-file"><i class="bi bi-file-earmark"></i>{{ truncateText(file.name, 20) }}</span> -->
                 <button :disabled="loading" class="cross-delete" @click="removeTempFile(file)">&#10005</button>
             </div>
         </div>

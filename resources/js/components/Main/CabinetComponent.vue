@@ -38,6 +38,7 @@ export default {
     },
     mounted() {
         this.$store.dispatch('fetchUser');
+
     },
     computed: {
         user() {
@@ -59,10 +60,33 @@ export default {
 
         handleImageChange(event) {
             const file = event.target.files[0];
-            this.imageFile = file
             if (file) {
-                this.selectedImage = URL.createObjectURL(file);
-                this.showImageUploadModal = true;
+                const image = new Image();
+                image.src = URL.createObjectURL(file);
+
+                const validateImage = new Promise((resolve, reject) => {
+                    image.onload = function () {
+                        const width = this.width;
+                        const height = this.height;
+
+                        if (width > 1000 || height > 1000) {
+                            reject('Max 1000x1000 px');
+                        } else {
+                            resolve(file);
+                        }
+                    };
+                });
+
+                validateImage
+                    .then(validFile => {
+                        this.imageFile = validFile;
+                        this.selectedImage = URL.createObjectURL(validFile);
+                        this.showImageUploadModal = true;
+                        // Другие действия при успешной валидации
+                    })
+                    .catch(error => {
+                        alert('Max 1000x1000 px');
+                    });
             }
         },
 
@@ -87,7 +111,6 @@ export default {
                         this.cancelImageUpload()
                     })
                     .catch((err) => {
-                        console.log(err);
                     });
             });
         },
@@ -226,6 +249,7 @@ export default {
         background: whitesmoke;
         border: 10px whitesmoke solid;
         border-radius: 5px;
+
         img {
             width: 100%;
             height: 100%;

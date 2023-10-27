@@ -40,6 +40,17 @@ class StoreController extends BaseController
                 ];
 
                 $filesResult[] = File::create($fileOptions);
+                if ($this->isImage($file)) {
+                    try {
+                        $image = Image::make(public_path('storage/' . $path));
+                        $image->resize(320, 240, function ($constraint) {
+                            $constraint->aspectRatio();
+                        });
+                        $image->save();
+                    } catch (\Exception $e) {
+                        
+                    }
+                }
             }
         }
 
@@ -51,6 +62,7 @@ class StoreController extends BaseController
     }
     private function isImage($file)
     {
-        return in_array($file->getMimeType(), ['image/jpeg', 'image/png', 'image/gif', 'image/bmp']);
+        $allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/bmp'];
+        return in_array($file->getMimeType(), $allowedMimeTypes);
     }
 }

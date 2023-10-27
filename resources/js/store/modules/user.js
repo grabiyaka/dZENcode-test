@@ -18,7 +18,6 @@ export const user = {
                 .then(response => {
                     const user = response.data;
                     commit('setUser', user);
-                    console.log(response.data);
                 })
                 .catch(error => {
                     commit('setUser', {});

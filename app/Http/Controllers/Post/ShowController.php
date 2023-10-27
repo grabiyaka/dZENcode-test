@@ -10,7 +10,9 @@ class ShowController extends BaseController
     public function __invoke(Post $post)
     {   
         $page = request('page', 1);
-        $posts = $this->service->buildPostsTree($page);
+        $sortField = request('sortField', 'created_at'); 
+        $sortDirection = request('sortDirection', 'desc');
+        $posts = $this->service->buildPostsTree($page, $sortField, $sortDirection);
         return $posts;
     }
 }

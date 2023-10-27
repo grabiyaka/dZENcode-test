@@ -137,56 +137,33 @@
     box-sizing: border-box;
 }
 
+/* Общие стили для dropdown */
 .dropdown {
-    position: relative;
     display: inline-block;
+    position: relative;
 }
 
-/* Dropdown button */
-.dropbtn {
-    background-color: #3498db;
-    color: white;
+/* Стили для select */
+.dropdown-select {
     padding: 10px;
-    border: none;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    border-radius: 5px;
     cursor: pointer;
+    outline: none;
 }
 
-/* Dropdown content (hidden by default) */
-.dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: #f9f9f9;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-    z-index: 1;
+/* Стили для select при наведении */
+.dropdown-select:hover {
+    border: 1px solid #3498db;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
 }
 
-/* Dropdown links */
-.dropdown-content a {
-    color: black;
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
-    cursor: pointer;
-}
-
-/* Change color on hover */
-.dropdown-content a:hover {
-    background-color: #e9e9e9;
-}
-
-/* Show the dropdown menu on hover */
-.dropdown:hover {
-    .dropdown-content {
-        display: block;
-    }
-}
-
-/* Change color of the button on hover */
-.dropdown:hover {
-    .dropbtn {
-        background-color: #2980b9;
-    }
+/* Стили для select в активном состоянии (при выборе) */
+.dropdown-select:focus {
+    border: 1px solid #3498db;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
 }
 </style>
 <template>
@@ -202,12 +179,13 @@
             <h2>Posts:</h2>
 
             <div class="dropdown">
-                <button class="dropbtn">Sort By</button>
-                <div class="dropdown-content">
-                    <a @click="getPosts('user_name', 'asc')">Name</a>
-                    <a @click="getPosts('created_at','asc')">Date (Newest)</a>
-                    <a @click="getPosts('created_at', 'desc')">Date (Oldest)</a>
-                </div>
+                <p>Sorted by:</p>
+                <select v-model="sort" class="dropdown-select">
+                    <option value="user_name desc">Name</option>
+                    <option value="email desc">Email</option>
+                    <option value="created_at desc">Date (Newest)</option>
+                    <option value="created_at asc">Date (Oldest)</option>
+                </select>
             </div>
         </div>
         <CommentTree :posts="$store.getters.getPosts"></CommentTree>
@@ -245,6 +223,9 @@ export default {
                 currentPage: 1,
                 totalPages: 1,
             },
+            sort: 'created_at desc',
+            isDropdownOpen: false,
+
         };
     },
     components: {
@@ -279,15 +260,20 @@ export default {
 
     },
     methods: {
-        async getPosts(sortOrder, sortDirection) {
+        async getPosts() {
             try {
+                const [sortOrder, sortDirection] = this.sort.split(' ');
+
                 const response = await axios.get(`/api/posts?page=${this.paginate.currentPage}&sortField=${sortOrder}&sortDirection=${sortDirection}`);
                 this.$store.commit('setPosts', response.data.data);
+                console.log(response.data.data);
                 this.paginate.totalPages = response.data.last_page;
 
             } catch (error) {
-                console.log(error);
             }
+        },
+        toggleDropdown() {
+            this.isDropdownOpen = !this.isDropdownOpen;
         },
         scrollToBlock(blockId) {
             const element = document.getElementById(blockId);
@@ -310,6 +296,11 @@ export default {
                 this.scrollToBlock('posts');
             }
         },
+        'sort': function (newPage, oldPage) {
+            if (newPage !== oldPage) {
+                this.getPosts();
+            }
+        }
     },
 
 };
