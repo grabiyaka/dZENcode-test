@@ -1,3 +1,144 @@
+<style lang="scss">
+.files-container {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 10px;
+    margin: 5px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px;
+
+    .file-element {
+        position: relative;
+        width: 100px;
+        height: 100px;
+        overflow: hidden;
+        border: 2px solid #ddd;
+        border-radius: 5px;
+        background-size: cover;
+        background-position: center center;
+
+        div {
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        i {
+            font-size: 90px;
+            width: 100%;
+            height: 100%;
+        }
+
+        p {
+            background: red;
+        }
+    }
+
+    .cross-delete {
+        top: 0;
+        right: 0;
+    }
+
+    .pagination {
+        display: flex;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        justify-content: center;
+    }
+
+    .page-item {
+        margin: 0 5px;
+    }
+
+    .page-link {
+        display: block;
+        padding: 10px 15px;
+        text-align: center;
+        background-color: #007BFF;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .page-link:hover {
+        background-color: #0056b3;
+    }
+
+    .active .page-link {
+        background-color: #0056b3;
+    }
+
+    .page-link {
+        display: block;
+        padding: 10px 15px;
+        text-align: center;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.3s;
+    }
+
+    .page-link:hover {
+        background-color: #0056b3;
+        transform: scale(1.05);
+        /* Увеличиваем размер при наведении */
+    }
+
+    .active .page-link {
+        background-color: #0056b3;
+        transform: scale(1.05);
+    }
+
+    .page-item {
+        margin: 0 5px;
+        transition: transform 0.3s;
+    }
+
+    .page-item.active-prev {
+        transform: translateX(-10px);
+    }
+
+    .page-item.active-next {
+        transform: translateX(10px);
+    }
+
+}
+
+.posts-header {
+    justify-content: center;
+    text-align: center;
+}
+
+.block-search {
+    display: flex;
+    align-items: center;
+}
+
+.block-search input {
+    flex: 1;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px; 
+    font-size: 18px; 
+    margin: 8px 0; 
+    display: inline-block;
+    box-sizing: border-box;
+}
+
+.block-search button {
+    padding: 12px 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 18px;
+    display: inline-block;
+    box-sizing: border-box;
+}
+
+
+</style>
 <template>
 <div>
     <h1 id="title">Home</h1>
@@ -7,7 +148,14 @@
     </div>
 
     <div v-if="$store.getters.getPosts.length" id="posts">
-        <h2>Cool posts:</h2>
+        <div class="posts-header">
+            <h2>Posts:</h2>
+            <div class="block-search">
+                <input type="text" placeholder="Search...">
+                <button><i class="bi bi-search"></i></button>
+            </div>
+            
+        </div>
         <CommentTree :posts="$store.getters.getPosts"></CommentTree>
 
         <!-- Пагинация -->
@@ -112,113 +260,3 @@ export default {
 
 };
 </script>
-
-<style lang="scss">
-.files-container {
-    display: flex;
-    flex-wrap: wrap;
-    padding: 10px;
-    margin: 5px;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 10px;
-
-    .file-element {
-        position: relative;
-        width: 100px;
-        height: 100px;
-        overflow: hidden;
-        border: 2px solid #ddd;
-        border-radius: 5px;
-        background-size: cover;
-        background-position: center center;
-
-        div{
-            width: 100%;
-            height: 100%;
-            cursor: pointer;
-        }
-
-        i{
-            font-size: 90px;
-            width: 100%;
-            height: 100%; 
-        }
-
-        p{
-            background: red;
-        }
-    }
-
-    .cross-delete {
-        top: 0;
-        right: 0;
-    }
-
-    .pagination {
-        display: flex;
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        justify-content: center;
-    }
-
-    .page-item {
-        margin: 0 5px;
-    }
-
-    .page-link {
-        display: block;
-        padding: 10px 15px;
-        text-align: center;
-        background-color: #007BFF;
-        color: #fff;
-        text-decoration: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-    }
-
-    .page-link:hover {
-        background-color: #0056b3;
-    }
-
-    .active .page-link {
-        background-color: #0056b3;
-    }
-
-    .page-link {
-        display: block;
-        padding: 10px 15px;
-        text-align: center;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s, transform 0.3s;
-    }
-
-    .page-link:hover {
-        background-color: #0056b3;
-        transform: scale(1.05);
-        /* Увеличиваем размер при наведении */
-    }
-
-    .active .page-link {
-        background-color: #0056b3;
-        transform: scale(1.05);
-    }
-
-    .page-item {
-        margin: 0 5px;
-        transition: transform 0.3s;
-    }
-
-    .page-item.active-prev {
-        transform: translateX(-10px);
-    }
-
-    .page-item.active-next {
-        transform: translateX(10px);
-    }
-
-}
-</style>

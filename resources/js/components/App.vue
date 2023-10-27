@@ -144,47 +144,12 @@ button[disabled] {
     flex-wrap: wrap;
 }
 
-.flex {
-    display: flex;
-}
-
-.center {
-    text-align: center;
-    justify-content: center;
-}
-
-.btn {
-    text-decoration: none;
-    background: slateblue;
-    border: none;
-    border-radius: 5px;
-    padding: 5px;
-    cursor: pointer;
-    color: white;
-    transition: 0.4s;
-}
 
 .images-box {
     display: flex;
     flex-wrap: wrap;
 }
 
-.content {
-    display: block;
-}
-
-.block {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-.element {
-    background: white;
-    border: 2px solid #000;
-    padding: 5px;
-}
 
 input[type="file"] {
     display: none; /* Скрываем оригинальный input */
@@ -254,32 +219,6 @@ form {
     margin-top: 50px;
 }
 
-.dropzone {
-    padding: 50px;
-    background: #212121;
-    color: white;
-}
-
-nav .btn,
-nav input {
-    width: 100%;
-    margin-bottom: 10px;
-    box-sizing: border-box;
-    text-align: center;
-}
-
-nav input {
-    outline: none;
-    padding: 10px;
-    border-radius: 0;
-    border: 1px solid gray;
-}
-
-textarea {
-    width: 100%;
-    height: 85px;
-}
-
 .checkboxs {
     width: fit-content;
 }
@@ -289,12 +228,6 @@ textarea {
     margin-right: 3%;
 }
 
-.btn-danger:hover {
-    transition: all ease 0.5s;
-    background: linear-gradient(to left, #c0392b 50%, transparent 50%);
-    background-size: 200% 100%;
-    background-position: top right;
-}
 
 input[type="text"],
 input[type="number"],
@@ -333,12 +266,6 @@ div {
     border-radius: 5px;
 }
 
-.item {
-    padding: 10px;
-    border: solid slategray;
-    margin: 5px;
-    width: 100%;
-}
 
 body {
     height: 100%;
@@ -346,111 +273,6 @@ body {
     font-size: 17px;
     margin-left: auto;
     margin-right: auto;
-}
-
-.btn {
-    background: linear-gradient(to left, #6e85b7 50%, transparent 50%);
-    background-size: 200% 100%;
-    color: black;
-    border-radius: 6px;
-    cursor: pointer;
-    padding: 10px;
-    transition: 0.5s;
-    border: 1px solid #6e85b7;
-    margin: 5px 10px;
-    box-shadow: 0 2px 10px #00000030;
-    text-decoration: none;
-}
-
-.btn:hover {
-    background-position: top right;
-    color: white;
-}
-
-.navbar {
-    margin: 30px;
-}
-
-.popup {
-    position: absolute;
-    background: white;
-    border-radius: 20px;
-    padding: 4px 9px 4px 12px;
-    font-weight: bold;
-    border: 1px solid black;
-}
-
-.viewport {
-    position: relative;
-    width: fit-content;
-    height: fit-content;
-    margin: 0 auto;
-}
-
-.viewport img {
-    width: 360px;
-    height: auto;
-    margin-right: 10px;
-}
-
-.point {
-    position: absolute;
-    height: 10px;
-    width: 10px;
-    background: black;
-    border-radius: 20px;
-}
-
-.preloader {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.preloader span {
-    display: block;
-    height: 15px;
-    width: 15px;
-    background: #000000;
-    margin: 0 7px;
-    border-radius: 10px;
-    animation: 1.2s upDown infinite;
-}
-
-.preloader span:first-child {
-    animation-delay: 0.15s;
-}
-
-.preloader span:nth-child(2) {
-    animation-delay: 0.3s;
-}
-
-.preloader span:nth-child(3) {
-    animation-delay: 0.45s;
-}
-
-.preloader span:nth-child(4) {
-    animation-delay: 0.6s;
-}
-
-.preloader span:last-child {
-    animation-delay: 0.75s;
-}
-
-.line {
-    position: absolute;
-    width: 3px;
-    height: 3px;
-    background: red;
-}
-
-.wrap {
-    flex-wrap: wrap;
-    transition: all ease 0.5s;
 }
 
 .cross-delete {
@@ -474,20 +296,6 @@ body {
     .cross-delete:hover {
         transform: rotate(180deg);
     }
-
-@keyframes upDown {
-    0% {
-        height: 15px;
-    }
-
-    50% {
-        height: 60px;
-    }
-
-    100% {
-        height: 15px;
-    }
-}
 
 .ellipsis-text {
   white-space: nowrap;
