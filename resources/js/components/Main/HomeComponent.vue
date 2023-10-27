@@ -129,9 +129,25 @@ export default {
         height: 100px;
         overflow: hidden;
         border: 2px solid #ddd;
-        /* Цвет границы */
         border-radius: 5px;
-        /* Скругленные углы */
+        background-size: cover;
+        background-position: center center;
+
+        div{
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        i{
+            font-size: 90px;
+            width: 100%;
+            height: 100%; 
+        }
+
+        p{
+            background: red;
+        }
     }
 
     .cross-delete {
