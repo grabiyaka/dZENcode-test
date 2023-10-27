@@ -121,9 +121,9 @@
     flex: 1;
     padding: 5px;
     border: 1px solid #ccc;
-    border-radius: 4px; 
-    font-size: 18px; 
-    margin: 8px 0; 
+    border-radius: 4px;
+    font-size: 18px;
+    margin: 8px 0;
     display: inline-block;
     box-sizing: border-box;
 }
@@ -137,7 +137,57 @@
     box-sizing: border-box;
 }
 
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
 
+/* Dropdown button */
+.dropbtn {
+    background-color: #3498db;
+    color: white;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+}
+
+/* Dropdown content (hidden by default) */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+/* Dropdown links */
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    cursor: pointer;
+}
+
+/* Change color on hover */
+.dropdown-content a:hover {
+    background-color: #e9e9e9;
+}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover {
+    .dropdown-content {
+        display: block;
+    }
+}
+
+/* Change color of the button on hover */
+.dropdown:hover {
+    .dropbtn {
+        background-color: #2980b9;
+    }
+}
 </style>
 <template>
 <div>
@@ -150,11 +200,15 @@
     <div v-if="$store.getters.getPosts.length" id="posts">
         <div class="posts-header">
             <h2>Posts:</h2>
-            <div class="block-search">
-                <input type="text" placeholder="Search...">
-                <button><i class="bi bi-search"></i></button>
+
+            <div class="dropdown">
+                <button class="dropbtn">Sort By</button>
+                <div class="dropdown-content">
+                    <a @click="getPosts('user_name', 'asc')">Name</a>
+                    <a @click="getPosts('created_at','asc')">Date (Newest)</a>
+                    <a @click="getPosts('created_at', 'desc')">Date (Oldest)</a>
+                </div>
             </div>
-            
         </div>
         <CommentTree :posts="$store.getters.getPosts"></CommentTree>
 
@@ -225,9 +279,9 @@ export default {
 
     },
     methods: {
-        async getPosts() {
+        async getPosts(sortOrder, sortDirection) {
             try {
-                const response = await axios.get(`/api/posts?page=${this.paginate.currentPage}`);
+                const response = await axios.get(`/api/posts?page=${this.paginate.currentPage}&sortField=${sortOrder}&sortDirection=${sortDirection}`);
                 this.$store.commit('setPosts', response.data.data);
                 this.paginate.totalPages = response.data.last_page;
 

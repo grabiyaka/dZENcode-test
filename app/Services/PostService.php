@@ -49,12 +49,17 @@ class PostService
 
     public function buildPostsTree($page)
     {
-        $posts = Post::where('parent_id', null)->paginate(25, ['*'], 'page', $page);
-
+        $sortField = request('sortField', 'created_at'); 
+        $sortDirection = request('sortDirection', 'desc');
+    
+        $posts = Post::where('parent_id', null)
+            ->orderBy($sortField, $sortDirection)
+            ->paginate(25, ['*'], 'page', $page);
+    
         foreach ($posts as $post) {
             $this->buildSubTree($post);
         }
-
+    
         return $posts;
     }
 
