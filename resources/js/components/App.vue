@@ -26,10 +26,10 @@ export default {
     <transition name="slide" mode="out-in">
         <div id="viewbox" :key="$route.path">
             <component :is="Component"></component>
-            <LoaderComponent></LoaderComponent>
         </div>
     </transition>
 </router-view>
+<LoaderComponent></LoaderComponent>
 <FooterComponent />
 </template>
 
@@ -317,21 +317,24 @@ body {
 
 .delete-btn {
     background-color: #d9534f;
-    &:hover{
+
+    &:hover {
         background-color: #b64441;
     }
 }
 
 .reply-btn {
     background-color: #5bc0de;
-    &:hover{
+
+    &:hover {
         background-color: #4695ad;
     }
 }
 
 .gray-btn {
     background-color: #808080;
-    &:hover{
+
+    &:hover {
         background-color: #6b6b6b;
     }
 }

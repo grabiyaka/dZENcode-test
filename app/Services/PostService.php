@@ -21,20 +21,6 @@ class PostService
         $posts = Post::all();
         return $posts;
     }
-    public function userPosts($id)
-    {
-        $user = User::find($id);
-        $posts = $user->posts;
-        $i = 0;
-        $arr = [];
-        foreach ($posts as $post) {
-            $arr[$i]['id'] = $post->id;
-            $arr[$i]['client_name'] = $post->client_name;
-            $i++;
-        }
-        ;
-        return $arr;
-    }
 
     public function deletePost(Post $post)
     {

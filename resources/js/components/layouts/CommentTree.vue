@@ -161,7 +161,7 @@
                         <div v-if="isImage(file) || isGif(file)" @click="openImg('/storage/'+file.path)"></div>
                         <div @click="openModalTxt('/storage/'+file.path)" v-else-if="isTextFile(file)"><i class="bi bi-filetype-txt"></i></div>
                         <p>{{ file.name }}</p>
-                        <button v-if="$store.getters.getUser?.id == post.user_id" class="cross-delete" @click="deleteFile(file, post.id)">&#10005</button>
+                        <button v-if="$store.getters.getUser?.id == post.user_id && (post.content != '<p><br></p>' || post.files.length > 1) " class="cross-delete" @click="deleteFile(file, post.id)">&#10005</button>
                     </div>
                 </div>
             </div>
@@ -194,7 +194,6 @@
 <script>
 import QuillEditor from "./QuillEditor.vue";
 import TextViewer from "./TextViewer.vue"
-import PopupComponent from "./PopupComponent.vue";
 
 export default {
     props: {
@@ -222,7 +221,6 @@ export default {
     components: {
         QuillEditor,
         TextViewer,
-        PopupComponent
     },
     methods: {
         postCreate(postId = null) {

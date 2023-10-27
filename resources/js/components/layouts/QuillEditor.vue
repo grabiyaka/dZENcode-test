@@ -121,6 +121,7 @@ export default {
         },
         postCreate(postId = null) {
             if (this.quill.root.innerHTML != '<p><br></p>' || this.tempFiles.length) {
+                this.$store.commit('setLoading', true)
                 this.loading = true
                 let fd = new FormData()
                 const post = {
@@ -163,10 +164,12 @@ export default {
                             this.quill.root.innerHTML = '<p><br></p>'
                             this.tempFiles = []
                             this.loading = false
+                            this.$store.commit('setLoading', false)
                         })
                         .catch((err) => {
                             alert('error')
-                            this.loading = false
+                            this.loading = falsethis.
+                            $store.commit('setLoading', false)
                         });
                 });
             } else {

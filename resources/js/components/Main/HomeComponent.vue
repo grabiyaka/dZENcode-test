@@ -261,15 +261,17 @@ export default {
     },
     methods: {
         async getPosts() {
+        this.$store.commit('setLoading', true)
             try {
                 const [sortOrder, sortDirection] = this.sort.split(' ');
 
                 const response = await axios.get(`/api/posts?page=${this.paginate.currentPage}&sortField=${sortOrder}&sortDirection=${sortDirection}`);
                 this.$store.commit('setPosts', response.data.data);
-                console.log(response.data.data);
                 this.paginate.totalPages = response.data.last_page;
+                this.$store.commit('setLoading', false)
 
-            } catch (error) {
+            } catch (error) { 
+                this.$store.commit('setLoading', false)
             }
         },
         toggleDropdown() {
