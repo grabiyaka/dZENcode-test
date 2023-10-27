@@ -20,7 +20,6 @@ class PostFactory extends Factory
 
         return [
             'user_id' => User::inRandomOrder()->first()->id,
-            'user_name' => User::inRandomOrder()->first()->name,
             'content' => $faker->paragraph,
             'created_at' => now(),
             'updated_at' => now(),

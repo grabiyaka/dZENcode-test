@@ -38,8 +38,8 @@ class PostService
         $query = Post::where('parent_id', null);
 
         $query->join('users', 'posts.user_id', '=', 'users.id')
-            ->select('posts.*', 'users.email', 'users.avatar')
-            ->orderBy($sortField === 'email' ? 'users.email' : 'posts.' . $sortField, $sortDirection);
+            ->selectRaw('posts.*, users.email, users.avatar, users.name AS user_name')
+            ->orderBy($sortField === 'email' ? 'users.email' : ($sortField === 'user_name' ? 'user_name' : 'posts.' . $sortField), $sortDirection);
 
         $posts = $query->paginate(25, ['*'], 'page', $page);
 
@@ -50,10 +50,11 @@ class PostService
         return $posts;
     }
 
+
     protected function buildSubTree(Post $post)
     {
         $subposts = Post::where('parent_id', $post->id)->join('users', 'posts.user_id', '=', 'users.id')
-            ->select('posts.*', 'users.email', 'users.avatar')->take(2)->get();
+            ->selectRaw('posts.*, users.email, users.avatar, users.name AS user_name')->take(2)->get();
         $morePosts = Post::where('parent_id', $post->id)->take(3)->count() > 2;
 
         $files = File::where('post_id', $post->id)->get();

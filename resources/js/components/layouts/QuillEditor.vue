@@ -31,7 +31,7 @@ import 'quill/dist/quill.snow.css';
 import TextViewer from "./TextViewer.vue";
 
 export default {
-    components:{
+    components: {
         TextViewer
     },
     props: {
@@ -79,10 +79,21 @@ export default {
         },
         handleFileUpload(event) {
             const selectedFiles = event.target.files;
-            if (selectedFiles.length > 0) {
-                this.tempFiles = this.tempFiles.concat(Array.from(selectedFiles));
+            const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'txt'];
+
+            for (let i = 0; i < selectedFiles.length; i++) {
+                const file = selectedFiles[i];
+                const fileNameParts = file.name.split('.');
+                const fileExtension = fileNameParts[fileNameParts.length - 1].toLowerCase();
+
+                if (allowedExtensions.includes(fileExtension)) {
+                    this.tempFiles = this.tempFiles.concat(file);
+                } else {
+                    alert(`File ${file.name} has an invalid extension`);
+                }
             }
         },
+
         removeTempFile(file) {
             const index = this.tempFiles.indexOf(file);
             if (index > -1) {
@@ -167,9 +178,9 @@ export default {
                             this.$store.commit('setLoading', false)
                         })
                         .catch((err) => {
+                            this.$store.commit('setLoading', false)
                             alert('error')
-                            this.loading = falsethis.
-                            $store.commit('setLoading', false)
+                            this.loading = false
                         });
                 });
             } else {
@@ -196,12 +207,12 @@ export default {
 </script>
 
 <style lang="scss">
-    .unknow-file{
-        display: flexbox;
-        
-        i{
-            display: block;
-            font-size: 150px;
-        }
+.unknow-file {
+    display: flexbox;
+
+    i {
+        display: block;
+        font-size: 150px;
     }
+}
 </style>

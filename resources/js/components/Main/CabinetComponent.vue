@@ -59,6 +59,8 @@ export default {
         },
 
         handleImageChange(event) {
+
+            this.$store.commit('setLoading', true)
             const file = event.target.files[0];
             if (file) {
                 const image = new Image();
@@ -82,9 +84,10 @@ export default {
                         this.imageFile = validFile;
                         this.selectedImage = URL.createObjectURL(validFile);
                         this.showImageUploadModal = true;
-                        // Другие действия при успешной валидации
+                        this.$store.commit('setLoading', false)
                     })
                     .catch(error => {
+                        this.$store.commit('setLoading', false)
                         alert('Max 1000x1000 px');
                     });
             }
@@ -98,6 +101,7 @@ export default {
         },
 
         uploadImage() {
+            this.$store.commit('setLoading', true)
             let fd = new FormData()
 
             fd.append('user_id', this.user.id)
@@ -109,8 +113,11 @@ export default {
                     .then((res) => {
                         this.$store.dispatch('fetchUser');
                         this.cancelImageUpload()
+                        this.$store.commit('setLoading', false)
                     })
                     .catch((err) => {
+                        console.log(err);
+                        this.$store.commit('setLoading', false)
                     });
             });
         },
@@ -248,7 +255,8 @@ export default {
         position: relative;
         background: whitesmoke;
         border: 10px whitesmoke solid;
-        border-radius: 5px;
+        padding: 10px;
+        border-radius: 30px;
 
         img {
             width: 100%;
@@ -256,5 +264,40 @@ export default {
             border-radius: 50%;
         }
     }
+
+    .image-upload-controls {
+        position: absolute;
+        bottom: -30px;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border-radius: 5px;
+        text-align: center;
+    }
+
+    .image-upload-controls button {
+        background-color: #007BFF;
+        /* Цвет кнопки */
+        color: #fff;
+        /* Цвет текста кнопки */
+        border: none;
+        padding: 10px 20px;
+        margin: 5px;
+        cursor: pointer;
+        border-radius: 3px;
+        font-size: 16px;
+    }
+
+    .image-upload-controls button:hover {
+        background-color: #0056b3;
+        /* Цвет кнопки при наведении */
+    }
+
+    .image-upload-controls button:focus {
+        outline: none;
+        /* Убираем контур фокуса */
+    }
+
 }
 </style>
