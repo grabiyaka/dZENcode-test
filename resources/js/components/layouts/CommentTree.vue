@@ -165,15 +165,6 @@
                     </div>
                 </div>
             </div>
-            <div :class="{active: img.active}" class="img-container">
-                <img :class="{active: img.active}" :style="img.style" :src="img.path" alt="" @click="closeImg">
-                <button class="imgFlipBtn" @click="changeImgStyle"><i class="bi bi-arrow-clockwise"></i></button>
-                <div :class="{active: img.active}" class="img-background" @click="closeImg"></div>
-            </div>
-            <div v-if="txt.active" :class="{active: txt.active}" class="img-container">
-                <text-viewer :filePath="txt.path"></text-viewer>
-                <div :class="{active: txt.active}" class="img-background" @click="txt.active = false"></div>
-            </div>
 
             <div class="post-control-panel">
                 <button @click="$store.commit('setReplyId', post.id)" class="btn reply-btn" v-if="post.id !== $store.getters.getReplyId && $store.state.token.token">Reply</button>
@@ -186,6 +177,15 @@
                 <CommentTree :parentPost="post" :posts="post.posts"></CommentTree>
                 <button class="btn gray-btn" v-if="post.more_posts" @click="downloadMoreComments(post.id, index)">Download more comments...</button>
             </div>
+        </div>
+        <div :class="{active: img.active}" class="img-container">
+            <img :class="{active: img.active}" :style="img.style" :src="img.path" alt="" @click="closeImg">
+            <button class="imgFlipBtn" @click="changeImgStyle"><i class="bi bi-arrow-clockwise"></i></button>
+            <div :class="{active: img.active}" class="img-background" @click="closeImg"></div>
+        </div>
+        <div v-if="txt.active" :class="{active: txt.active}" class="img-container">
+            <text-viewer :filePath="txt.path"></text-viewer>
+            <div :class="{active: txt.active}" class="img-background" @click="txt.active = false"></div>
         </div>
     </div>
 </div>
@@ -248,8 +248,7 @@ export default {
                     axios
                         .post("/api/post", fd)
                         .then((res) => {
-                            if (postId) {
-                            } else {
+                            if (postId) {} else {
                                 this.post.content = ''
                                 this.quill.root.innerHTML = ''
                                 const result = this.posts.unshift(res.data.data)
@@ -421,8 +420,8 @@ export default {
             return textContent.slice(0, 20);
         },
 
-        closeImg(){
-            this.img.active = false 
+        closeImg() {
+            this.img.active = false
         },
         openImg(path) {
             this.img.active = true

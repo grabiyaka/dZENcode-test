@@ -72,7 +72,8 @@ class PostService
 
     public function getChilds($post)
     {
-        $posts = Post::where('parent_id', $post->id)->get();
+        $posts = Post::where('parent_id', $post->id)->join('users', 'posts.user_id', '=', 'users.id')
+            ->selectRaw('posts.*, users.email, users.avatar, users.name AS user_name')->get();
 
         foreach ($posts as $post) {
             $this->buildSubTree($post);
