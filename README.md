@@ -35,5 +35,3 @@ To link the public storage directory, run:
 This project is a test assignment from dZENcode. It functions as a mini-forum where users can register, create posts, and add comments to those posts. Users also have the option to attach images to posts and comments. Each user has a personal profile where they can change their avatar.
 
 Enjoy exploring and using the forum application! If you have any questions or run into issues, feel free to contact us.
-
-For more information about the project or any specific features, refer to the project documentation or reach out to the dZENcode team.
