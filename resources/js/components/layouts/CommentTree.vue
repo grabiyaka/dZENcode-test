@@ -139,7 +139,7 @@
     <div class="block-posts" v-if="posts.length">
         <div v-for="(post, index) in posts" class="block-post">
             <div class="reply-block" v-if="parentPost?.parent_id">
-                <p>{{ removeTagsAndTruncate(parentPost.content) }}...</p>
+                <p>{{ removeTagsAndTruncate(parentPost.content) }}</p>
             </div>
             <button v-if="$store.getters.getUser?.id == post.user_id" @click="deletePost(post.id)" class="cross-delete">&#10005</button>
 
@@ -424,7 +424,9 @@ export default {
             div.innerHTML = htmlContent;
 
             const textContent = div.textContent;
-            return textContent.slice(0, 20);
+            if(textContent.length > 20){
+                return textContent.slice(0, 20) + '...';
+            } else return textContent
         },
 
         closeImg() {

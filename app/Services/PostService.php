@@ -4,6 +4,11 @@ namespace App\Services;
 use App\Models\Post;
 use App\Models\User;
 use App\Models\File;
+use App\Http\Resources\Post\PostResource;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Str;
+use Intervention\Image\ImageManagerStatic as Image;
 
 class PostService
 {
@@ -31,6 +36,59 @@ class PostService
     {
         $post->images()->delete();
         $post->delete();
+    }
+
+    public function createPostWithFiles($request){
+        $filesResult = [];
+        $data = $request->validated();
+        $data['user_id'] = Auth::id();
+        $files = $request->file('files');
+        unset($data['files']);
+        $post = $this->store($data);
+        $postResource = new PostResource($post);
+
+        if ($files) {
+            $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'txt'];
+        
+            foreach ($files as $file) {
+                $extension = $file->getClientOriginalExtension();
+                
+                if (in_array($extension, $allowedExtensions)) {
+                    $fileName = $file->getClientOriginalName();
+                    $uniqueFileName = Str::random(40) . '.' . $extension;
+                    $path = $file->storeAs('uploads', $uniqueFileName);
+                    $path = $file->store('uploads', 'public');
+        
+                    $fileOptions = [
+                        'name' => $fileName,
+                        'path' => $path,
+                        'post_id' => $postResource['id']
+                    ];
+        
+                    $filesResult[] = File::create($fileOptions);
+                    if ($this->isImage($file)) {
+                        try {
+                            $image = Image::make(public_path('storage/' . $path));
+                            $image->resize(320, 240, function ($constraint) {
+                                $constraint->aspectRatio();
+                            });
+                            $image->save();
+                        } catch (\Exception $e) {
+
+                        }
+                    }
+                }
+            }
+        }
+        
+
+        $postData = $postResource->resource->toArray();
+        $files = [
+            'files' => $filesResult
+        ];
+        $postData['user_name'] = Auth::user()->name;
+        $postData['avatar'] = Auth::user()->avatar;
+        return array_merge($postData, $files);
     }
 
     public function buildPostsTree($page, $sortField, $sortDirection)
@@ -82,6 +140,10 @@ class PostService
         return $posts;
     }
 
-
+    private function isImage($file)
+    {
+        $allowedMimeTypes = ['image/jpeg', 'image/png', 'image/bmp'];
+        return in_array($file->getMimeType(), $allowedMimeTypes);
+    }
 
 }
