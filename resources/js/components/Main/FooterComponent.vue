@@ -1,8 +1,8 @@
 <template>
-<footer class="footer" >
+<footer class="footer">
     <div class="container">
         <div class="row">
-            <div class="col-md-6">
+            <div>
                 <div class="company-info">
                     <h4>Mega Forum</h4>
                     <p>&copy; 2023. All rights reserved</p>
@@ -10,10 +10,20 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-6">
-                <div class="support-info">
-                    <h4>Technical support</h4>
-                   
+            <div class="support-info">
+                <h4>Technical support</h4>
+                <div>
+                    <p>
+                        Contact us by mail:
+                        <a href="mailto:illya.gerasimets@gmail.com">illya.gerasimets@gmail.com</a>
+                    </p>
+                </div>
+                <div class="social-icons">
+                    <p>Or through social networks:</p>
+                    <div>
+                        <a target="_blank" href="https://t.me/h_elijah"><i class="bi bi-telegram"></i></a>
+                        <a target="_blank" href="https://instagram.com/h._elijah_?igshid=OGQ5ZDc2ODk2ZA%3D%3D&utm_source=qr"><i class="bi bi-instagram"></i></a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -21,16 +31,14 @@
 </footer>
 </template>
 
-  
 <script>
 export default {
     mounted() {},
 };
 </script>
 
-  
 <style lang="scss" scoped>
-.footer {
+footer {
     background-color: #f2f9ff;
     color: #005580;
     width: 100%;
@@ -40,7 +48,10 @@ export default {
     margin-top: auto;
     position: relative;
     bottom: 0;
-    height: 120px;
+}
+
+.row {
+    padding: 20px;
 }
 
 .social-icons {
@@ -51,6 +62,7 @@ export default {
 
 .container {
     justify-content: space-around;
+    flex-wrap: wrap;
 }
 
 .footer p {
@@ -81,10 +93,6 @@ export default {
     text-decoration: underline;
 }
 
-.support-info-content {
-    display: inline-block;
-    margin-right: 20px;
-}
 
 .social-icons a {
     color: #005580;

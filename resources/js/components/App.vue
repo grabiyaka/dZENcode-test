@@ -335,7 +335,43 @@ body {
     background-color: #808080;
 
     &:hover {
-        background-color: #6b6b6b;
+        background-color: #a0a0a0;
+    }
+}
+
+/* Общие стили кнопки */
+.load-button {
+    transition: all ease .1s;
+    color: transparent;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Стили для спиннера */
+.load-button::after {
+    transition: all ease .1s;
+    content: '';
+    width: 20px;
+    height: 20px;
+    border: 3px solid #fff;
+    border-top: 3px solid transparent;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+
+    100% {
+        transform: translate(-50%, -50%) rotate(360deg);
     }
 }
 </style>

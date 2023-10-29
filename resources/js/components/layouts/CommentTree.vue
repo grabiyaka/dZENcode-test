@@ -5,7 +5,7 @@
     .block-post {
         position: relative;
         margin: 10px 0;
-        padding: 0 0 10px 10px;
+        padding: 10px 0 10px 10px;
         border: 1px solid #ddd;
         background-color: #fff;
 
@@ -133,7 +133,7 @@
 
 }
 </style>
-
+ т
 <template>
 <div>
     <div class="block-posts" v-if="posts.length">
@@ -175,7 +175,7 @@
             </div>
             <div v-if="post.posts">
                 <CommentTree :parentPost="post" :posts="post.posts"></CommentTree>
-                <button class="btn gray-btn" v-if="post.more_posts" @click="downloadMoreComments(post.id, index)">Download more comments...</button>
+                <button class="btn gray-btn" :class="{'load-button': downloads.moreComments == post.id}" v-if="post.more_posts" @click="downloadMoreComments(post.id, index)">Download more comments...</button>
             </div>
         </div>
         <div :class="{active: img.active}" class="img-container">
@@ -214,6 +214,9 @@ export default {
             txt: {
                 active: false,
                 path: ''
+            },
+            downloads: {
+                moreComments: false
             }
 
         }
@@ -263,6 +266,7 @@ export default {
             }
         },
         downloadMoreComments(id, index) {
+            this.downloads.moreComments = id
             axios
                 .post(`/api/post/childs/${id}`)
                 .then((res) => {
@@ -271,10 +275,13 @@ export default {
                             parentId: id,
                             newPost: el
                         });
+                        this.downloads.moreComments = false
                     });
                     this.posts[index].more_posts = false
                 })
-                .catch((err) => {});
+                .catch((err) => {
+                        this.downloads.moreComments = false
+                    });
         },
         deletePost(id) {
             axios

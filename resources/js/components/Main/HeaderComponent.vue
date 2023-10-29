@@ -3,7 +3,7 @@
     <div class="background"></div>
     <ul class="ui-header">
         <li :class="{optional: !$store.state.token.token}">
-            <RouterLink class="nav-el" :to="{ name: 'home' }"><i class="bi bi-house-door-fill"></i> home
+            <RouterLink class="nav-el" :to="{ name: 'home' }"><i class="bi bi-house-door-fill"></i> Home
             </RouterLink>
         </li>
 
@@ -12,11 +12,11 @@
         <RegistrationComponent class="" v-if="!$store.state.token.token" :btnClass="'nav-el'">
         </RegistrationComponent>
         <li class="optional" v-if="$store.state.token.token">
-            <a class="nav-el" @click.prevent="logout"><i class="bi bi-door-open-fill"></i>exit
+            <a class="nav-el" @click.prevent="logout"><i class="bi bi-door-open-fill"></i>Exit
             </a>
         </li>
         <li class="" v-if="$store.state.token.token">
-            <RouterLink class="nav-el" :to="{ name: 'cabinet' }"><i class="bi bi-person-circle"></i> cabinet
+            <RouterLink class="nav-el" :to="{ name: 'cabinet' }"><i class="bi bi-person-circle"></i> Cabinet
             </RouterLink>
         </li>
 
