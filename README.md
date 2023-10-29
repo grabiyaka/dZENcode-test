@@ -31,7 +31,7 @@ To link the public storage directory, run:
 ### 7. Change php.ini 
 To ensure the proper functioning of the library that works with images, uncomment this line in your php.ini: 
 ###
-    extension=gd.
+    extension=gd
 
 ### 8. And if you want: create new users and posts 
     php artisan db:seed --class=DatabaseSeeder

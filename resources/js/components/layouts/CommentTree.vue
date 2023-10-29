@@ -5,9 +5,19 @@
     .block-post {
         position: relative;
         margin: 10px 0;
-        padding: 10px 0 10px 10px;
+        padding: 10px 0 0px 10px;
         border: 1px solid #ddd;
+        border-bottom: none;
         background-color: #fff;
+
+        .highlighted {
+            transition: all ease .2s;
+            outline: 0px solid #8888886c;
+            &.active{
+                background: #8888886c;
+                outline: 5px solid #8888886c;
+            }
+        }
 
         .user-info {
             display: flex;
@@ -69,6 +79,17 @@
 
         opacity: 0;
         visibility: hidden;
+
+        img {
+            max-height: 400px;
+            max-width: 320px;
+            object-fit: contain;
+            margin-top: 90vh;
+            border-radius: 5px;
+
+            opacity: 0;
+            visibility: hidden;
+        }
     }
 
     .img-background {
@@ -86,17 +107,7 @@
 
         opacity: 0;
         visibility: hidden;
-    }
 
-    .img-container img {
-        max-width: 90%;
-        max-height: 90vh;
-        object-fit: contain;
-        margin-top: 90vh;
-        border-radius: 5px;
-
-        opacity: 0;
-        visibility: hidden;
     }
 
     /* Анимация появления фона */
@@ -113,8 +124,15 @@
     }
 
     .reply-block {
+        cursor: pointer;
         padding: 0 5px;
         background: #80808050;
+
+        a {
+            width: 100%;
+            text-decoration: none;
+            color: black;
+        }
     }
 
     .imgFlipBtn {
@@ -122,55 +140,57 @@
         bottom: 20px;
         left: 50%;
         transform: translateX(-50%);
-        background-color: rgba(190, 190, 190, 0.616);
+        background-color: rgba(32, 32, 32, 0.753);
         border: none;
         border-radius: 50%;
         width: 50px;
         height: 50px;
-        color: #000000;
+        color: #ffffff;
         cursor: pointer;
     }
 
 }
 </style>
- т
+
 <template>
 <div>
     <div class="block-posts" v-if="posts.length">
-        <div v-for="(post, index) in posts" class="block-post">
-            <div class="reply-block" v-if="parentPost?.parent_id">
-                <p>{{ removeTagsAndTruncate(parentPost.content) }}</p>
-            </div>
-            <button v-if="$store.getters.getUser?.id == post.user_id" @click="deletePost(post.id)" class="cross-delete">&#10005</button>
+        <div v-for="(post, index) in posts" :id="post.id" class="block-post">
+            <div class="highlighted" :class="{'active': highlightedBlockId}">
+                <div @click="highlightBlock(parentPost?.parent_id)" class="reply-block" v-if="parentPost?.parent_id">
+                    <p>{{ removeTagsAndTruncate(parentPost.content) }}</p>
+                </div>
+                <button v-if="$store.getters.getUser?.id == post.user_id" @click="deletePost(post.id)" class="cross-delete">&#10005</button>
 
-            <div class="user-info">
+                <div class="user-info">
 
-                <div class="user-avatar">
-                    <img v-if="!post.avatar" src="/images/default-avatar.png" alt="User Avatar" />
-                    <img v-if="post.avatar" :src="'/storage/'+post.avatar" alt="User Avatar" />
+                    <div class="user-avatar">
+                        <img v-if="!post.avatar" src="/images/default-avatar.png" alt="User Avatar" />
+                        <img v-if="post.avatar" :src="'/storage/'+post.avatar" alt="User Avatar" />
+                    </div>
+
+                    <span class="user-name">{{ post.user_name }}:</span>
+                    <span class="post-time">{{ formatDateTime(post.created_at) }}</span>
                 </div>
 
-                <span class="user-name">{{ post.user_name }}:</span>
-                <span class="post-time">{{ formatDateTime(post.created_at) }}</span>
-            </div>
-
-            <div class="post-content">
-                <div class="post-text" v-html="post.content"></div>
-                <div v-if="post.files" class="files-container">
-                    <div class="file-element" v-for="(file, index) in post.files" :key="file.id" :style="{'background-image': isImage(file) || isGif(file) ? `url(${'/storage/'+file.path})` : 'none'}">
-                        <div v-if="isImage(file) || isGif(file)" @click="openImg('/storage/'+file.path)"></div>
-                        <div @click="openModalTxt('/storage/'+file.path)" v-else-if="isTextFile(file)"><i class="bi bi-filetype-txt"></i></div>
-                        <p>{{ file.name }}</p>
-                        <button v-if="$store.getters.getUser?.id == post.user_id && (post.content != '<p><br></p>' || post.files.length > 1) " class="cross-delete" @click="deleteFile(file, post.id)">&#10005</button>
+                <div class="post-content">
+                    <div class="post-text" v-html="post.content"></div>
+                    <div v-if="post.files" class="files-container">
+                        <div class="file-element" v-for="(file, index) in post.files" :key="file.id" :style="{'background-image': isImage(file) || isGif(file) ? `url(${'/storage/'+file.path})` : 'none'}">
+                            <div v-if="isImage(file) || isGif(file)" @click="openImg('/storage/'+file.path)"></div>
+                            <div @click="openModalTxt('/storage/'+file.path)" v-else-if="isTextFile(file)"><i class="bi bi-filetype-txt"></i></div>
+                            <p>{{ file.name }}</p>
+                            <button v-if="$store.getters.getUser?.id == post.user_id && (post.content != '<p><br></p>' || post.files.length > 1) " class="cross-delete" @click="deleteFile(file, post.id)">&#10005</button>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="post-control-panel">
-                <button @click="$store.commit('setReplyId', post.id)" class="btn reply-btn" v-if="post.id !== $store.getters.getReplyId && $store.state.token.token">Reply</button>
+                <div class="post-control-panel">
+                    <button @click="$store.commit('setReplyId', post.id)" class="btn reply-btn" v-if="post.id !== $store.getters.getReplyId && $store.state.token.token">Reply</button>
 
-                <div class="replyPost" v-if="post.id == $store.getters.getReplyId">
-                    <quill-editor :post="post" :ref="'quillReply'"></quill-editor>
+                    <div class="replyPost" v-if="post.id == $store.getters.getReplyId">
+                        <quill-editor :post="post" :ref="'quillReply'"></quill-editor>
+                    </div>
                 </div>
             </div>
             <div v-if="post.posts">
@@ -178,6 +198,8 @@
                 <button class="btn gray-btn" :class="{'load-button': downloads.moreComments == post.id}" v-if="post.more_posts" @click="downloadMoreComments(post.id, index)">Download more comments...</button>
             </div>
         </div>
+
+        <!-- popups -->
         <div :class="{active: img.active}" class="img-container">
             <img :class="{active: img.active}" :style="img.style" :src="img.path" alt="" @click="closeImg">
             <button class="imgFlipBtn" @click="changeImgStyle"><i class="bi bi-arrow-clockwise"></i></button>
@@ -187,6 +209,7 @@
             <text-viewer :filePath="txt.path"></text-viewer>
             <div :class="{active: txt.active}" class="img-background" @click="txt.active = false"></div>
         </div>
+
     </div>
 </div>
 </template>
@@ -217,7 +240,8 @@ export default {
             },
             downloads: {
                 moreComments: false
-            }
+            },
+            highlightedBlockId: false
 
         }
     },
@@ -280,8 +304,8 @@ export default {
                     this.posts[index].more_posts = false
                 })
                 .catch((err) => {
-                        this.downloads.moreComments = false
-                    });
+                    this.downloads.moreComments = false
+                });
         },
         deletePost(id) {
             axios
@@ -397,14 +421,13 @@ export default {
         },
 
         downloadFile() {
-            // Создаем ссылку для скачивания файла
             const blob = new Blob([this.fileContent], {
                 type: 'text/plain'
             });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'textfile.txt'; // Задайте имя файла
+            a.download = 'textfile.txt'; 
             a.click();
             window.URL.revokeObjectURL(url);
         },
@@ -424,7 +447,7 @@ export default {
             div.innerHTML = htmlContent;
 
             const textContent = div.textContent;
-            if(textContent.length > 20){
+            if (textContent.length > 20) {
                 return textContent.slice(0, 20) + '...';
             } else return textContent
         },
@@ -436,6 +459,17 @@ export default {
             this.img.active = true
             this.img.path = path
         },
+        highlightBlock(id) {
+            var postBlock = document.getElementById(id);
+            this.$parent.highlightedBlockId = true
+
+            if (postBlock) {
+                postBlock.scrollIntoView({ behavior: "smooth" });
+            }
+            setTimeout(() => {
+                this.$parent.highlightedBlockId = false
+            }, 500)
+        }
 
     }
 };

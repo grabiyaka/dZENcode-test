@@ -206,8 +206,6 @@ export default {
         left: 50%;
         transform: translate(-50%, -50%);
 
-        button {}
-
         opacity: 0;
         visibility: hidden;
     }
@@ -278,9 +276,7 @@ export default {
 
     .image-upload-controls button {
         background-color: #007BFF;
-        /* Цвет кнопки */
         color: #fff;
-        /* Цвет текста кнопки */
         border: none;
         padding: 10px 20px;
         margin: 5px;
@@ -291,12 +287,10 @@ export default {
 
     .image-upload-controls button:hover {
         background-color: #0056b3;
-        /* Цвет кнопки при наведении */
     }
 
     .image-upload-controls button:focus {
         outline: none;
-        /* Убираем контур фокуса */
     }
 
 }

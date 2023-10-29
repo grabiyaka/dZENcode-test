@@ -181,8 +181,8 @@
             <div class="dropdown">
                 <p>Sorted by:</p>
                 <select v-model="sort" class="dropdown-select">
-                    <option value="user_name desc">Name</option>
-                    <option value="email desc">Email</option>
+                    <option value="user_name asc">Name</option>
+                    <option value="email asc">Email</option>
                     <option value="created_at desc">Date (Newest)</option>
                     <option value="created_at asc">Date (Oldest)</option>
                 </select>
@@ -190,7 +190,6 @@
         </div>
         <CommentTree :posts="$store.getters.getPosts"></CommentTree>
 
-        <!-- Пагинация -->
         <ul class="pagination">
             <li v-if="paginate.currentPage > 1" :class="{ 'active-prev': paginate.currentPage > 2 }" class="page-item">
                 <button @click="paginate.currentPage = paginate.currentPage - 1" class="page-link">Предыдущая</button>
