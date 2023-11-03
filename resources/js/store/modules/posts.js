@@ -1,7 +1,8 @@
 export const posts = {
     state: () => ({
         posts: [],
-        replyId: null
+        replyId: null,
+        changeId: null
     }),
     mutations: {
         setReplyId(state, replyId) {
@@ -9,6 +10,9 @@ export const posts = {
         },
         setPosts(state, posts) {
             state.posts = posts;
+        },
+        setChangeId(state, changeId) {
+            state.changeId = changeId;
         },
         addPost(state, post) {
             state.posts.unshift(post);
@@ -20,8 +24,10 @@ export const posts = {
                         if (!post.posts) {
                             post.posts = [];
                         }
-                        post.posts.push(newPost);
-                        state.replyId = null
+                        if(!post.posts.find(el => el.id == newPost.id)){
+                            post.posts.push(newPost);
+                            state.replyId = null
+                        }
                         return;
                     }
                     if (post.posts) {
@@ -38,6 +44,9 @@ export const posts = {
         },
         getReplyId(state) {
             return state.replyId
+        },
+        getChangeId(state) {
+            return state.changeId
         }
     },
 }

@@ -20,8 +20,8 @@
         </div>
 
     </div>
-    <button :disabled="loading" @click="postCreate(post?.id)" class="btn reply-btn">{{ post?.id ?'Reply' : 'Submit' }}</button>
-    <button :disabled="loading" v-if="post?.id" @click="$store.commit('setReplyId', null)" class="btn delete-btn">Cancel</button>
+    <button :disabled="loading" @click="submit(post?.id)" class="btn reply-btn">{{ method }}</button>
+    <button :disabled="loading" v-if="post?.id" @click="$store.commit('setReplyId', null), $store.commit('setChangeId', null)" class="btn delete-btn">Cancel</button>
 </div>
 </template>
 
@@ -36,7 +36,8 @@ export default {
     },
     props: {
         value: String,
-        post: null
+        post: null,
+        method: String
     },
     data() {
         return {
@@ -59,9 +60,18 @@ export default {
         this.quill.on('text-change', () => {
             this.$emit('input', this.quill.root.innerHTML);
         });
+        if(this.value) this.quill.root.innerHTML = this.value
+
     },
     methods: {
+        submit(id) {
+            if (this.method == 'Create' || this.method == 'Reply') this.postCreate(id)
+            else if (this.method == 'Change') this.postChange(id)
+        },
         generatePlaceholder() {
+            if (this.method == 'change') {
+                return 'Your changes...'
+            }
             const placeholders = [
                 "Your idea here...",
                 "What's on your mind?",
@@ -105,29 +115,23 @@ export default {
         },
 
         isImage(file) {
-            // Список расширений изображений
             const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp'];
 
-            // Получаем расширение файла (предполагаем, что расширение находится в конце имени файла)
             const fileExtension = file.name.split('.').pop().toLowerCase();
 
-            // Проверяем, является ли расширение изображением
             return imageExtensions.includes(fileExtension);
         },
 
         isGif(file) {
-            // Проверяем, является ли файл GIF-изображением
             return this.isImage(file) && file.name.toLowerCase().endsWith('.gif');
         },
 
         isTextFile(file) {
-            // Список расширений текстовых файлов
             const textFileExtensions = ['txt'];
 
             // Получаем расширение файла
             const fileExtension = file.name.split('.').pop().toLowerCase();
 
-            // Проверяем, является ли расширение текстовым файлом
             return textFileExtensions.includes(fileExtension);
         },
         postCreate(postId = null) {
@@ -180,6 +184,7 @@ export default {
                         .catch((err) => {
                             this.$store.commit('setLoading', false)
                             alert('error')
+                            console.log(err);
                             this.loading = false
                         });
                 });
@@ -187,6 +192,32 @@ export default {
                 alert('Nothing to submit')
             }
 
+        },
+        postChange(id) {
+            this.$store.commit('setLoading', true)
+            this.loading = true
+            let fd = new FormData()
+            let post = {
+                change: this.quill.root.innerHTML
+            }
+
+            this.tempFiles.forEach((file, index) => {
+                fd.append(`files[${index}]`, file);
+            });
+            console.log('change');
+            axios.get("/sanctum/csrf-cookie").then((response) => {
+                axios
+                    .patch(`/api/post/${id}`, post)
+                    .then((res) => {
+                        this.$store.commit('setLoading', false)
+                        console.log(res.data);
+                        alert('saved!');
+                    })
+                    .catch((err) => {
+                        this.$store.commit('setLoading', false)
+                        console.log(err);
+                    });
+            });
         },
         truncateText(text, maxLength) {
             if (text.length > maxLength) {
@@ -200,6 +231,7 @@ export default {
     },
     watch: {
         value(newVal) {
+            console.log(111);
             this.quill.root.innerHTML = newVal;
         }
     },

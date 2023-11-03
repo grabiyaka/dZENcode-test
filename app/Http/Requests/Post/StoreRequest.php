@@ -23,7 +23,7 @@ class StoreRequest extends FormRequest
      */
     public function rules()
     {
-        return [ 
+        return [
             'content' => '',
             'parent_id' => '',
             'files' => ''

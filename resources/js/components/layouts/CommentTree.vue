@@ -65,7 +65,7 @@
         color: #888;
     }
 
-    .img-container {
+    .popup {
         position: fixed;
         top: 0;
         left: 0;
@@ -111,7 +111,7 @@
     }
 
     /* Анимация появления фона */
-    .img-container.active,
+    .popup.active,
     .img-background.active,
     img.active {
         opacity: 1;
@@ -174,22 +174,35 @@
                 </div>
 
                 <div class="post-content">
-                    <div class="post-text" v-html="post.content"></div>
+                    <div class="post-text" :class="{underline: post.change}" v-html="post.content"></div>
+                    <div v-if="post.change && post.id != $store.getters.getChangeId">Modified: <span class="post-text" v-html="post.change"></span></div>
+                    
                     <div v-if="post.files" class="files-container">
                         <div class="file-element" v-for="(file, index) in post.files" :key="file.id" :style="{'background-image': isImage(file) || isGif(file) ? `url(${'/storage/'+file.path})` : 'none'}">
                             <div v-if="isImage(file) || isGif(file)" @click="openImg('/storage/'+file.path)"></div>
                             <div @click="openModalTxt('/storage/'+file.path)" v-else-if="isTextFile(file)"><i class="bi bi-filetype-txt"></i></div>
                             <p>{{ file.name }}</p>
-                            <button v-if="$store.getters.getUser?.id == post.user_id && (post.content != '<p><br></p>' || post.files.length > 1) " class="cross-delete" @click="deleteFile(file, post.id)">&#10005</button>
+                            <button v-if="$store.getters.getUser?.id == post.user_id && (post.content != '<p><br></p>' 
+                                || post.files.length > 1) " class="cross-delete" @click="deleteFile(file, post.id)">&#10005</button>
                         </div>
                     </div>
                 </div>
 
                 <div class="post-control-panel">
-                    <button @click="$store.commit('setReplyId', post.id)" class="btn reply-btn" v-if="post.id !== $store.getters.getReplyId && $store.state.token.token">Reply</button>
+                    <button @click="$store.commit('setReplyId', post.id)" class="btn reply-btn" 
+                        v-if="post.id !== $store.getters.getReplyId && $store.state.token.token && post.id != $store.getters.getChangeId">
+                            Reply</button>
 
-                    <div class="replyPost" v-if="post.id == $store.getters.getReplyId">
-                        <quill-editor :post="post" :ref="'quillReply'"></quill-editor>
+                    <button v-if="$store.getters.getUser?.id == post.user_id && $store.getters.getChangeId != post.id " class="btn change-btn" 
+                        @click="$store.commit('setChangeId', post.id)">Change</button>
+
+                    <div v-if="post.id == $store.getters.getReplyId">
+                        <h3>Your answer:</h3>
+                        <quill-editor :post="post" method="Reply" :ref="'quillReply'"></quill-editor>
+                    </div>
+                    <div v-if="post.id == $store.getters.getChangeId">
+                        <h3>Modified:</h3>
+                        <quill-editor :post="post" method="Change" :value="post.change" :ref="'quillChange'"></quill-editor>
                     </div>
                 </div>
             </div>
@@ -200,12 +213,12 @@
         </div>
 
         <!-- popups -->
-        <div :class="{active: img.active}" class="img-container">
+        <div :class="{active: img.active}" class="popup">
             <img :class="{active: img.active}" :style="img.style" :src="img.path" alt="" @click="closeImg">
             <button class="imgFlipBtn" @click="changeImgStyle"><i class="bi bi-arrow-clockwise"></i></button>
             <div :class="{active: img.active}" class="img-background" @click="closeImg"></div>
         </div>
-        <div v-if="txt.active" :class="{active: txt.active}" class="img-container">
+        <div v-if="txt.active" :class="{active: txt.active}" class="popup">
             <text-viewer :filePath="txt.path"></text-viewer>
             <div :class="{active: txt.active}" class="img-background" @click="txt.active = false"></div>
         </div>
@@ -250,50 +263,12 @@ export default {
         TextViewer,
     },
     methods: {
-        postCreate(postId = null) {
-            let fd = new FormData()
-            const post = {
-                content: ''
-            }
-
-            if (postId) {
-                post.content = this.$refs.quillReply[0].quill.root.innerHTML;
-                post.parent_id = postId
-
-                this.$refs.quillReply[0].tempFiles.forEach((file, index) => {
-                    fd.append(`files[${index}]`, file);
-                });
-            } else post.content = this.$refs.quillComponent.quill.root.innerHTML;
-
-            for (let key in post) {
-                if (post.hasOwnProperty(key)) {
-                    fd.append(key, post[key]);
-                }
-            }
-            if (post.content) {
-                axios.get("/sanctum/csrf-cookie").then((response) => {
-                    axios
-                        .post("/api/post", fd)
-                        .then((res) => {
-                            if (postId) {} else {
-                                this.post.content = ''
-                                this.quill.root.innerHTML = ''
-                                const result = this.posts.unshift(res.data.data)
-                                this.$store.commit('setPosts', result)
-                            }
-
-                        })
-                        .catch((err) => {});
-                });
-            } else {
-                alert('error');
-            }
-        },
         downloadMoreComments(id, index) {
             this.downloads.moreComments = id
             axios
                 .post(`/api/post/childs/${id}`)
                 .then((res) => {
+                    console.log(res.data);
                     res.data.forEach(el => {
                         this.$store.commit('addPostToParent', {
                             parentId: id,
@@ -322,16 +297,6 @@ export default {
 
                 })
                 .catch((err) => {});
-        },
-        updatePost(post) {
-            axios.get("/sanctum/csrf-cookie").then((response) => {
-                axios
-                    .patch(`/api/post/${post.id}`, post)
-                    .then((res) => {
-                        alert('saved!');
-                    })
-                    .catch((err) => {});
-            });
         },
         formatDateTime(dateTimeString) {
             const options = {

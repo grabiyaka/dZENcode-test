@@ -7,7 +7,7 @@ use App\Models\Post;
 
 class ShowController extends BaseController
 {
-    public function __invoke(Post $post)
+    public function __invoke()
     {   
         $page = request('page', 1);
         $sortField = request('sortField', 'created_at'); 

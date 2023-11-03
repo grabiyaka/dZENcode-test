@@ -12,6 +12,6 @@ class UpdateController extends BaseController
     {   
         $data = $request->validated();
         $this->service->update($data, $post);
-        return response()->json(['message' => 'success']);
+        return response()->json($post);
     }
 }

@@ -331,6 +331,14 @@ body {
     }
 }
 
+.change-btn {
+    background-color: #4CAF50;
+
+    &:hover {
+        background-color: #45A045;
+    }
+}
+
 .gray-btn {
     background-color: #808080;
 

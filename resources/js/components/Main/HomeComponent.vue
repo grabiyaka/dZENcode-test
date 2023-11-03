@@ -171,7 +171,7 @@
     <h1 id="title">Home</h1>
     <div v-if="$store.getters.getUser?.id">
         Pleace write your comment
-        <quill-editor ref="quillComponent"></quill-editor>
+        <quill-editor method="Create" ref="quillComponent"></quill-editor>
     </div>
 
     <div v-if="$store.getters.getPosts.length" id="posts">
