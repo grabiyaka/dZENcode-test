@@ -9,6 +9,7 @@
         border: 1px solid #ddd;
         border-bottom: none;
         background-color: #fff;
+        transition: all ease .5s;
 
         .highlighted {
             transition: all ease .2s;
@@ -155,12 +156,13 @@
 <template>
 <div>
     <div class="block-posts" v-if="posts.length">
-        <div v-for="(post, index) in posts" :id="post.id" class="block-post">
+        <div v-for="(post, index) in posts" :style="{'transition-delay': (index + 1) * 200 + 'ms'}" :id="post.id" class="block-post">
             <div class="highlighted" :class="{'active': highlightedBlockId}">
+            {{ delay }}
                 <div @click="highlightBlock(parentPost?.parent_id)" class="reply-block" v-if="parentPost?.parent_id">
                     <p>{{ removeTagsAndTruncate(parentPost.content) }}</p>
                 </div>
-                <button v-if="$store.getters.getUser?.id == post.user_id" @click="deletePost(post.id)" class="cross-delete">&#10005</button>
+                <button v-if="$store.getters.getUser?.id == post.user_id, post.id == $store.getters.getChangeId" @click="deletePost(post.id)" class="cross-delete">&#10005</button>
 
                 <div class="user-info">
 
@@ -183,7 +185,7 @@
                             <div @click="openModalTxt('/storage/'+file.path)" v-else-if="isTextFile(file)"><i class="bi bi-filetype-txt"></i></div>
                             <p>{{ file.name }}</p>
                             <button v-if="$store.getters.getUser?.id == post.user_id && (post.content != '<p><br></p>' 
-                                || post.files.length > 1) " class="cross-delete" @click="deleteFile(file, post.id)">&#10005</button>
+                                || post.files.length > 1), post.id == $store.getters.getChangeId " class="cross-delete" @click="deleteFile(file, post.id)">&#10005</button>
                         </div>
                     </div>
                 </div>
@@ -234,7 +236,8 @@ import TextViewer from "./TextViewer.vue"
 export default {
     props: {
         posts: Object,
-        parentPost: Object
+        parentPost: Object,
+        delay: null
     },
     data() {
         return {

@@ -36,7 +36,18 @@ export const posts = {
                 }
             };
             addPostTo(state.posts);
+        },
+        updatePost(state, post) {
+            for (const key of Object.keys(state.posts)) {
+                const value = state.posts[key];
+                if(value.id == post.id) {
+                    console.log(1123);
+                    state.posts[key].change = post.change
+                    return
+                }
+            }
         }
+        
     },
     getters: {
         getPosts(state) {

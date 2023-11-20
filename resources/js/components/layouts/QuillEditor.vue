@@ -47,7 +47,6 @@ export default {
     },
     computed: {
         fileInputId() {
-            // Генерируйте уникальный идентификатор для каждого компонента
             return `fileInput-${this.post?.id}`;
         },
     },
@@ -66,7 +65,7 @@ export default {
     methods: {
         submit(id) {
             if (this.method == 'Create' || this.method == 'Reply') this.postCreate(id)
-            else if (this.method == 'Change') this.postChange(id)
+            else if (this.method == 'Change') this.postUpdate(id)
         },
         generatePlaceholder() {
             if (this.method == 'change') {
@@ -129,7 +128,6 @@ export default {
         isTextFile(file) {
             const textFileExtensions = ['txt'];
 
-            // Получаем расширение файла
             const fileExtension = file.name.split('.').pop().toLowerCase();
 
             return textFileExtensions.includes(fileExtension);
@@ -193,7 +191,7 @@ export default {
             }
 
         },
-        postChange(id) {
+        postUpdate(id) {
             this.$store.commit('setLoading', true)
             this.loading = true
             let fd = new FormData()
@@ -210,11 +208,16 @@ export default {
                     .patch(`/api/post/${id}`, post)
                     .then((res) => {
                         this.$store.commit('setLoading', false)
+                        this.loading = false
+                        this.$store.commit('setReplyId', null) 
+                        this.$store.commit('setChangeId', null)
+                        this.$store.commit('updatePost', res.data)
                         console.log(res.data);
                         alert('saved!');
                     })
                     .catch((err) => {
                         this.$store.commit('setLoading', false)
+                        this.loading = false
                         console.log(err);
                     });
             });
