@@ -10,7 +10,7 @@
         <div class="file-element" v-for="file in tempFiles" :key="file.name">
             <span v-if="isTextFile(file)">{{ file.name }}</span>
             <div>
-                <img v-if="isImage(file) || isGif(file)" :src="getSrc(file)" alt="Image" />
+                <img v-if="isImage(file) || isGif(file)" :src="file.path ? '/storage/' + file.path : getSrc(file)" alt="Image" />
                 <div v-else-if="isTextFile(file)">
                     <i class="bi bi-filetype-txt"></i>
                 </div>
@@ -60,7 +60,10 @@ export default {
             this.$emit('input', this.quill.root.innerHTML);
         });
         if(this.value) this.quill.root.innerHTML = this.value
-
+        
+        if(this.post?.files.length){
+            this.tempFiles = this.post.files 
+        }
     },
     methods: {
         submit(id) {
@@ -104,6 +107,9 @@ export default {
         },
 
         removeTempFile(file) {
+            if(file.path){
+                this.$parent.deleteFile(file, this.post.id)
+            }
             const index = this.tempFiles.indexOf(file);
             if (index > -1) {
                 this.tempFiles.splice(index, 1);

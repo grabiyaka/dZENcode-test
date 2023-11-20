@@ -179,7 +179,7 @@
                     <div class="post-text" :class="{underline: post.change}" v-html="post.content"></div>
                     <div v-if="post.change && post.id != $store.getters.getChangeId">Modified: <span class="post-text" v-html="post.change"></span></div>
                     
-                    <div v-if="post.files" class="files-container">
+                    <div v-if="post.files && post.id != $store.getters.getChangeId" class="files-container">
                         <div class="file-element" v-for="(file, index) in post.files" :key="file.id" :style="{'background-image': isImage(file) || isGif(file) ? `url(${'/storage/'+file.path})` : 'none'}">
                             <div v-if="isImage(file) || isGif(file)" @click="openImg('/storage/'+file.path)"></div>
                             <div @click="openModalTxt('/storage/'+file.path)" v-else-if="isTextFile(file)"><i class="bi bi-filetype-txt"></i></div>
